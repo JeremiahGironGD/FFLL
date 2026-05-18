@@ -1,0 +1,319 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Points System - FFLL</title>
+    <style>
+        :root {
+            color-scheme: dark;
+            --bg: #110917;
+            --surface: rgba(28, 16, 35, 0.94);
+            --border: rgba(255, 255, 255, 0.12);
+            --text: #eef3ff;
+            --muted: #c3cad9;
+            --accent: #b86af2;
+            --accent-soft: #8c5eea;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Inter, system-ui, sans-serif;
+            background: radial-gradient(circle at top right, rgba(192, 145, 255, 0.16), transparent 28%),
+                        radial-gradient(circle at bottom left, rgba(255, 94, 202, 0.12), transparent 24%),
+                        linear-gradient(180deg, #120613 0%, #100511 100%);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            padding: 32px 16px;
+        }
+        main { width: min(760px, 100%); }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 24px;
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .back-link::before {
+            content: "";
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            background: currentColor;
+            opacity: 0.4;
+        }
+        .page-title { margin: 0 0 10px; font-size: clamp(2rem, 3vw, 2.4rem); }
+        .subtitle { margin: 0 0 24px; color: var(--muted); }
+        .info-card { background: linear-gradient(135deg, rgba(46, 24, 70, 0.94), rgba(20, 10, 26, 0.96));
+                     border: 1px solid var(--border);
+                     border-radius: 24px;
+                     padding: 28px;
+                     box-shadow: 0 18px 40px rgba(0, 0, 0, 0.22);
+                     display: grid;
+                     gap: 20px; }
+        .info-card h2 { margin: 0 0 8px; color: #fff; }
+        .point-row { display: grid; gap: 16px; }
+        .point-item {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            padding: 16px 18px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .point-item strong { color: #fff; }
+        .point-item span { color: var(--muted); }
+        .leaderboard {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+        }
+        .leaderboard th,
+        .leaderboard td {
+            padding: 16px 18px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .leaderboard th {
+            color: var(--accent);
+            font-size: 0.95rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+        .leaderboard tbody tr:hover {
+            background: rgba(255, 255, 255, 0.04);
+        }
+        .rank-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            font-weight: 700;
+        }
+        .admin-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            margin: 0 0 20px;
+        }
+        .primary-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 18px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            background: linear-gradient(135deg, rgba(120, 67, 219, 0.95), rgba(180, 106, 242, 0.9));
+            color: white;
+            text-decoration: none;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 180ms ease, box-shadow 180ms ease, opacity 180ms ease;
+        }
+        .primary-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 14px 30px rgba(116, 80, 234, 0.25);
+            opacity: 0.96;
+        }
+        .admin-panel {
+            display: none;
+            gap: 18px;
+        }
+        .admin-panel.active {
+            display: grid;
+        }
+        .admin-actions {
+            display: grid;
+            gap: 14px;
+        }
+        .admin-actions label {
+            display: grid;
+            gap: 6px;
+            font-size: 0.95rem;
+            color: var(--muted);
+        }
+        .admin-actions input,
+        .admin-actions select {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text);
+            font: inherit;
+        }
+        .admin-actions button {
+            width: fit-content;
+            padding: 12px 18px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            background: linear-gradient(135deg, rgba(120, 67, 219, 0.95), rgba(180, 106, 242, 0.9));
+            color: white;
+            cursor: pointer;
+            font-weight: 700;
+        }
+        .note { color: var(--muted); line-height: 1.7; }
+        .highlight { color: var(--accent); }
+    </style>
+</head>
+<body>
+    <main>
+        <a class="back-link" href="index.html">← Back to levels</a>
+        <h1 class="page-title">FFLL Points System</h1>
+        <p class="subtitle">Track rewards and progress for completing challenge levels.</p>
+        <div class="admin-row">
+            <button id="admin-login-button" class="primary-button">Admin login</button>
+            <span id="admin-status" class="note">Admin editing is available for Idekan</span>
+        </div>
+        <section class="info-card admin-panel" id="admin-panel">
+            <h2>Admin controls</h2>
+            <p class="note">Log in with the admin email to update points and beaten levels without changing the website files.</p>
+            <div class="admin-actions">
+                <label>Player<select id="player-select"></select></label>
+                <label>Points<input id="points-input" type="number" min="0"></label>
+                <label>Levels beaten<input id="beaten-input" type="text" placeholder="Comma-separated levels"></label>
+                <label>Levels created<input id="created-input" type="text" placeholder="Comma-separated levels"></label>
+                <button id="save-admin">Save changes</button>
+            </div>
+        </section>
+        <section class="info-card">
+            <h2>How it works</h2>
+            <p class="note">Earn points for each level you beat. The more higher up the level is on the list, the more points you earn.</p>
+        </section>
+        <section class="info-card">
+            <h2>Leaderboard</h2>
+            <table class="leaderboard">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Player</th>
+                        <th>Points</th>
+                        <th>Levels you have beaten</th>
+                        <th>Levels you have created</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboard-body">
+                </tbody>
+            </table>
+            <p class="note"><span class="highlight">Note:</span> Admin edits are saved locally in your browser via localStorage.</p>
+        </section>
+        <section class="info-card">
+            <h2>May not be accurate</h2>
+            
+    </main>
+    <script>
+        const ADMIN_EMAIL = 'jeremiahgironyt@gmail.com';
+        const STORAGE_KEY = 'ffllLeaderboardData';
+        const defaultLeaderboard = [
+            {
+                name: 'Idekan',
+                points: 185,
+                beaten: 'ThatOnePurpleLevel, Forever & Ever Preview, Jace Circles',
+                created: 'Forever & Ever Preview'
+            },
+            {
+                name: 'no2one2noneSs',
+                points: 185,
+                beaten: 'ThatOnePurpleLevel, Wave 17 Remake, Jace Circles',
+                created: 'ThatOnePurpleLevel, Wave 17 Remake, Jace Circles'
+            }
+        ];
+
+        const leaderboardBody = document.getElementById('leaderboard-body');
+        const adminPanel = document.getElementById('admin-panel');
+        const adminLoginButton = document.getElementById('admin-login-button');
+        const adminStatus = document.getElementById('admin-status');
+        const playerSelect = document.getElementById('player-select');
+        const pointsInput = document.getElementById('points-input');
+        const beatenInput = document.getElementById('beaten-input');
+        const createdInput = document.getElementById('created-input');
+        const saveAdminButton = document.getElementById('save-admin');
+
+        function readLeaderboard() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (!saved) return defaultLeaderboard.slice();
+            try {
+                const parsed = JSON.parse(saved);
+                return Array.isArray(parsed) ? parsed : defaultLeaderboard.slice();
+            } catch (error) {
+                return defaultLeaderboard.slice();
+            }
+        }
+
+        function writeLeaderboard(data) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+
+        function renderLeaderboard() {
+            const data = readLeaderboard();
+            leaderboardBody.innerHTML = data.map((row, index) => `
+                <tr>
+                    <td><span class="rank-badge">${index + 1}</span></td>
+                    <td>${row.name}</td>
+                    <td>${row.points}</td>
+                    <td>${row.beaten}</td>
+                    <td>${row.created}</td>
+                </tr>
+            `).join('');
+            populatePlayerSelect(data);
+        }
+
+        function populatePlayerSelect(data) {
+            playerSelect.innerHTML = data.map((row, index) => `
+                <option value="${index}">${row.name}</option>
+            `).join('');
+            updateFormFields();
+        }
+
+        function updateFormFields() {
+            const data = readLeaderboard();
+            const selected = data[playerSelect.value] || data[0];
+            if (!selected) return;
+            pointsInput.value = selected.points;
+            beatenInput.value = selected.beaten;
+            createdInput.value = selected.created;
+        }
+
+        function handleAdminLogin() {
+            const email = prompt('Enter admin email:');
+            if (!email) return;
+            if (email.trim().toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+                adminPanel.classList.add('active');
+                adminStatus.textContent = 'Admin logged in as ' + ADMIN_EMAIL;
+                renderLeaderboard();
+            } else {
+                alert('Access denied. Only the admin can edit leaderboard values.');
+            }
+        }
+
+        function handleSaveAdmin() {
+            const data = readLeaderboard();
+            const index = Number(playerSelect.value);
+            if (Number.isNaN(index) || !data[index]) return;
+            data[index] = {
+                ...data[index],
+                points: Number(pointsInput.value) || 0,
+                beaten: beatenInput.value.trim(),
+                created: createdInput.value.trim()
+            };
+            writeLeaderboard(data);
+            renderLeaderboard();
+            alert('Leaderboard updated locally.');
+        }
+
+        adminLoginButton.addEventListener('click', handleAdminLogin);
+        playerSelect.addEventListener('change', updateFormFields);
+        saveAdminButton.addEventListener('click', handleSaveAdmin);
+
+        renderLeaderboard();
+    </script>
+</body>
+</html>
