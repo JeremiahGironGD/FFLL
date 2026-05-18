@@ -212,6 +212,7 @@
     </main>
     <script>
         const ADMIN_EMAIL = 'jeremiahgironyt@gmail.com';
+        const ADMIN_PASSWORD = 'FFLL2026'; // Change this to your secure password
         const STORAGE_KEY = 'ffllLeaderboardData';
         const defaultLeaderboard = [
             {
@@ -292,13 +293,23 @@
         function handleAdminLogin() {
             const email = prompt('Enter admin email:');
             if (!email) return;
-            if (email.trim().toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
-                adminPanel.classList.add('active');
-                adminStatus.textContent = 'Admin logged in as ' + ADMIN_EMAIL;
-                renderLeaderboard();
-            } else {
+            
+            if (email.trim().toLowerCase() !== ADMIN_EMAIL.toLowerCase()) {
                 alert('Access denied. Only the admin can edit leaderboard values.');
+                return;
             }
+            
+            const password = prompt('Enter admin password:');
+            if (!password) return;
+            
+            if (password !== ADMIN_PASSWORD) {
+                alert('Incorrect password. Access denied.');
+                return;
+            }
+            
+            adminPanel.classList.add('active');
+            adminStatus.textContent = 'Admin logged in as ' + ADMIN_EMAIL;
+            renderLeaderboard();
         }
 
         function handleSaveAdmin() {
