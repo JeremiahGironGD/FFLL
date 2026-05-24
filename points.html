@@ -153,14 +153,12 @@
                 <tbody id="leaderboard-body">
                 </tbody>
             </table>
-            <p class="note"><span class="highlight">Note:</span> Leaderboard data is loaded from your browser's localStorage when available.</p>
         </section>
         <section class="info-card">
             <h2>May not be accurate</h2>
             
     </main>
     <script>
-        const STORAGE_KEY = 'ffllLeaderboardData';
         const defaultLeaderboard = [
             {
                 name: 'Idekan',
@@ -184,24 +182,8 @@
 
         const leaderboardBody = document.getElementById('leaderboard-body');
 
-        function readLeaderboard() {
-            const saved = localStorage.getItem(STORAGE_KEY);
-            if (!saved) return defaultLeaderboard.slice();
-            try {
-                const parsed = JSON.parse(saved);
-                return Array.isArray(parsed) ? parsed : defaultLeaderboard.slice();
-            } catch (error) {
-                return defaultLeaderboard.slice();
-            }
-        }
-
-        function writeLeaderboard(data) {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-        }
-
         function renderLeaderboard() {
-            const data = readLeaderboard();
-            leaderboardBody.innerHTML = data.map((row, index) => `
+            leaderboardBody.innerHTML = defaultLeaderboard.map((row, index) => `
                 <tr>
                     <td><span class="rank-badge">${index + 1}</span></td>
                     <td>${row.name}</td>
