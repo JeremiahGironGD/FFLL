@@ -1,0 +1,30 @@
+Hello Silas,
+
+This is a guide on how to update the website! The website consists different HTML files or Website Files that once pushed out to GitHub, Cloudfare Pages will update the website!
+Many website files are important like index.html or the homepage of the website, and index.html are the most important files because without an index there will be no homepage, well enough talking and lets teach you 
+how to use the website 
+
+Buttons,
+
+The buttons on index.html are very easy to learn, their code is just 
+<a id="Level Name" class="level-card color" herf="example.html">
+<span class="label">#1</span> 
+<span class="title">Example Level</span>
+<span class="points-label">#1</span>  
+</a>
+Now what does this actually mean, well lets explain it step-by-step. So it starts off with the a id="Level Name", all it does is give it an ID just in case we need it later.
+Then we have the class, the class gives the button a type or in our case color! The next part is the most important, its the herf, the herf is what the button takes you to
+the herf does not work(sometimes) if you use the full link so it's better to use the name(ex. points.html).
+Now we have the <span> they just are the different parts inside the button.
+
+Pages,
+When you click a button it will take you to a different part of the website, these use complicated code, but you don't have to understand the code as all you do is copy and paste the code
+but you're not done yet, you have to go into the page and change the ID, Verifer, and Creator!
+
+Video,
+In a page you will see an <iframe> these iframe are the YouTube video of the showcase or verification, to edit one and change it to the correct video you will find the src and change it to the 
+youtube.com link, it cannot be a youtu.be link it has to be a youtube.com link
+
+Leaderboard,
+The Leaderboard can be found in points.html, in there you will look for a script there you will find the const in the const you will see a { or a bracket in that bracket you will see
+3 different rows, name:, points:, beaten:, and created: there you will make the changes and actually beat levels!
