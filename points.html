@@ -13,6 +13,7 @@
             --muted: #c3cad9;
             --accent: #b86af2;
             --accent-soft: #8c5eea;
+            --panel: rgba(20, 10, 26, 0.92);
         }
         * { box-sizing: border-box; }
         body {
@@ -28,12 +29,22 @@
             justify-content: center;
             padding: 32px 16px;
         }
-        main { width: min(760px, 100%); }
+        main {
+            width: min(1040px, 100%);
+            display: grid;
+            gap: 26px;
+        }
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
         .back-link {
             display: inline-flex;
             align-items: center;
             gap: 10px;
-            margin-bottom: 24px;
             color: var(--accent);
             text-decoration: none;
             font-weight: 600;
@@ -46,85 +57,151 @@
             background: currentColor;
             opacity: 0.4;
         }
-        .page-title { margin: 0 0 10px; font-size: clamp(2rem, 3vw, 2.4rem); }
-        .subtitle { margin: 0 0 24px; color: var(--muted); }
-        .info-card { background: linear-gradient(135deg, rgba(46, 24, 70, 0.94), rgba(20, 10, 26, 0.96));
-                     border: 1px solid var(--border);
-                     border-radius: 24px;
-                     padding: 28px;
-                     box-shadow: 0 18px 40px rgba(0, 0, 0, 0.22);
-                     display: grid;
-                     gap: 20px; }
-        .info-card h2 { margin: 0 0 8px; color: #fff; }
-        .point-row { display: grid; gap: 16px; }
-        .point-item {
+        .page-title { margin: 0; font-size: clamp(2rem, 3vw, 2.4rem); }
+        .subtitle { margin: 4px 0 0; color: var(--muted); max-width: 640px; }
+        .info-card {
+            background: linear-gradient(180deg, rgba(41, 21, 70, 0.95), rgba(20, 10, 26, 0.96));
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 20px 44px rgba(0,0,0,0.16);
+        }
+        .info-card h2 { margin: 0 0 12px; color: #fff; font-size: 1.05rem; }
+        .info-card p { margin: 0; color: var(--muted); line-height: 1.7; }
+        .viewer {
             display: grid;
-            grid-template-columns: 1fr auto;
-            padding: 16px 18px;
-            border-radius: 18px;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            grid-template-columns: minmax(270px, 360px) 1fr;
+            gap: 24px;
         }
-        .point-item strong { color: #fff; }
-        .point-item span { color: var(--muted); }
-        .leaderboard {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 12px;
+        .panel {
+            background: linear-gradient(180deg, rgba(41, 21, 70, 0.95), rgba(20, 10, 26, 0.96));
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 28px;
+            box-shadow: 0 24px 60px rgba(0,0,0,0.18);
+            overflow: hidden;
         }
-        .leaderboard th,
-        .leaderboard td {
-            padding: 16px 18px;
-            text-align: left;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        .panel-header {
+            padding: 22px 24px 18px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
         }
-        .leaderboard th {
-            color: var(--accent);
-            font-size: 0.95rem;
+        .panel-header h2 {
+            margin: 0;
+            font-size: 1.05rem;
             letter-spacing: 0.08em;
             text-transform: uppercase;
+            color: var(--accent);
         }
-        .leaderboard td:nth-child(4),
-        .leaderboard td:nth-child(5) {
-            font-size: 0.88rem;
-            line-height: 1.4;
-            max-width: 15rem;
-            white-space: normal;
-            word-break: break-word;
-        }
-        .leaderboard tbody tr:hover {
-            background: rgba(255, 255, 255, 0.04);
-        }
-        .rank-badge {
-            display: inline-flex;
+        .panel-header p { margin: 10px 0 0; color: var(--muted); line-height: 1.6; }
+        .search-box {
+            display: flex;
             align-items: center;
-            justify-content: center;
-            width: 34px;
-            height: 34px;
+            gap: 12px;
+            margin: 20px 24px 0;
+            padding: 14px 16px;
+            border-radius: 18px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .search-box input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            color: var(--text);
+            font-size: 0.95rem;
+            outline: none;
+        }
+        .search-box input::placeholder {
+            color: rgba(227, 235, 255, 0.56);
+        }
+        .player-list {
+            display: grid;
+            gap: 8px;
+            padding: 18px 24px 20px;
+            max-height: 560px;
+            overflow: auto;
+        }
+        .player-row {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 14px;
+            align-items: center;
+            padding: 16px 18px;
+            border-radius: 18px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: background 160ms ease, border-color 160ms ease;
+        }
+        .player-row:hover,
+        .player-row.selected {
+            background: rgba(184,106,242,0.14);
+            border-color: rgba(184,106,242,0.24);
+        }
+        .player-row .rank-badge {
+            width: 38px;
+            height: 38px;
             border-radius: 999px;
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(255,255,255,0.08);
             color: #fff;
             font-weight: 700;
-        }
-        .primary-button {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 12px 18px;
-            border-radius: 999px;
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            background: linear-gradient(135deg, rgba(120, 67, 219, 0.95), rgba(180, 106, 242, 0.9));
-            color: white;
-            text-decoration: none;
+        }
+        .player-meta {
+            display: grid;
+            gap: 4px;
+        }
+        .player-name { font-weight: 700; color: #fff; }
+        .player-subtitle { color: var(--muted); font-size: 0.92rem; }
+        .player-score { color: var(--accent); font-weight: 700; }
+        .details {
+            display: grid;
+            gap: 20px;
+            min-height: 560px;
+            padding: 24px;
+        }
+        .details-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 24px;
+            padding: 28px;
+            display: grid;
+            gap: 18px;
+        }
+        .details-card h3 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+        .details-card p { margin: 0; color: var(--muted); line-height: 1.75; }
+        .detail-row {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 16px;
+            align-items: center;
+            padding: 16px 18px;
+            border-radius: 18px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .detail-label { color: var(--muted); }
+        .detail-value { color: #fff; font-weight: 700; }
+        .pager {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2px;
+            margin-top: auto;
+        }
+        .pager button {
+            border: none;
+            background: transparent;
+            color: var(--text);
             font-weight: 700;
             cursor: pointer;
-            transition: transform 180ms ease, box-shadow 180ms ease, opacity 180ms ease;
+            transition: color 160ms ease;
         }
-        .primary-button:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 14px 30px rgba(116, 80, 234, 0.25);
-            opacity: 0.96;
-        }
+        .pager button:hover { color: var(--accent); }
         .note { color: var(--muted); line-height: 1.7; }
         .highlight { color: var(--accent); }
     </style>
@@ -138,25 +215,49 @@
             <h2>How it works</h2>
             <p class="note">Earn points for each level you beat. The more higher up the level is on the list, the more points you earn.</p>
         </section>
-        <section class="info-card">
-            <h2>Leaderboard</h2>
-            <table class="leaderboard">
-                <thead>
-                    <tr>
-                        <th>Rank</th>
-                        <th>Player</th>
-                        <th>Points</th>
-                        <th>Levels beaten</th>
-                        <th>Levels created</th>
-                    </tr>
-                </thead>
-                <tbody id="leaderboard-body">
-                </tbody>
-            </table>
+        <section class="viewer">
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>Leaderboard</h2>
+                    <p>Search players, view current point totals, and compare progress across creator and beaten levels.</p>
+                </div>
+                <div class="search-box">
+                    <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M18.333 18.333L13.333 13.333M15 8.333A6.667 6.667 0 1 1 1.667 8.333 6.667 6.667 0 0 1 15 8.333Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <input id="search-input" type="search" placeholder="Enter to search..." aria-label="Search players">
+                </div>
+                <div class="player-list" id="player-list"></div>
+                <div class="pager">
+                    <button id="prev-btn">Previous</button>
+                    <button id="next-btn">Next</button>
+                </div>
+            </div>
+            <div class="details">
+                <div class="details-card" id="details-card">
+                    <h3>Click on a player's name on the left to get started!</h3>
+                    <p class="note">This view gives you a quick look at points, levels beaten, and levels created.</p>
+                </div>
+                <div class="details-card" id="summary-card" style="display:none;">
+                    <div class="detail-row">
+                        <span class="detail-label">Player</span>
+                        <span class="detail-value" id="detail-name"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Points</span>
+                        <span class="detail-value" id="detail-points"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Levels beaten</span>
+                        <span class="detail-value" id="detail-beaten"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Levels created</span>
+                        <span class="detail-value" id="detail-created"></span>
+                    </div>
+                </div>
+            </div>
         </section>
-        <section class="info-card">
-            <h2>May not be accurate</h2>
-            
     </main>
     <script>
         const defaultLeaderboard = [
@@ -176,25 +277,108 @@
                 name: 'Angel',
                 points: 100,
                 beaten: 'Sonic Blaster, Jace Challenge',
-                created: 'Sonic Blaster',
+                created: 'Sonic Blaster'
             }
         ];
 
-        const leaderboardBody = document.getElementById('leaderboard-body');
+        const levelPoints = {
+            'back on track full': 100,
+            'idrinkbatteryacid': 80,
+            'thatonepurplelevel': 75,
+            'forever & ever preview': 50,
+            'wave 17 remake': 50,
+            'jace circles': 50,
+            'jace challenge': 50,
+            'sonic blaster': 50
+        };
 
-        function renderLeaderboard() {
-            leaderboardBody.innerHTML = defaultLeaderboard.map((row, index) => `
-                <tr>
-                    <td><span class="rank-badge">${index + 1}</span></td>
-                    <td>${row.name}</td>
-                    <td>${row.points}</td>
-                    <td>${row.beaten}</td>
-                    <td>${row.created}</td>
-                </tr>
-            `).join('');
+        function getLevelPoints(levelName) {
+            return levelPoints[levelName.trim().toLowerCase()] || 0;
         }
 
-        renderLeaderboard();
+        function getHardestBeatenLevel(beaten) {
+            const beatenLevels = beaten.split(',').map(level => level.trim()).filter(Boolean);
+            if (!beatenLevels.length) return 'No level yet';
+
+            return beatenLevels.reduce((hardest, current) => {
+                return getLevelPoints(current) > getLevelPoints(hardest) ? current : hardest;
+            });
+        }
+
+        const playerList = document.getElementById('player-list');
+        const searchInput = document.getElementById('search-input');
+        const detailCard = document.getElementById('details-card');
+        const summaryCard = document.getElementById('summary-card');
+        const detailName = document.getElementById('detail-name');
+        const detailPoints = document.getElementById('detail-points');
+        const detailBeaten = document.getElementById('detail-beaten');
+        const detailCreated = document.getElementById('detail-created');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+
+        let filteredLeaderboard = [...defaultLeaderboard];
+        let selectedIndex = -1;
+
+        function renderPlayerList() {
+            playerList.innerHTML = filteredLeaderboard.map((player, index) => `
+                <button class="player-row" type="button" data-index="${index}">
+                    <span class="rank-badge">${index + 1}</span>
+                    <div class="player-meta">
+                        <span class="player-name">${player.name}</span>
+                        <span class="player-subtitle">${getHardestBeatenLevel(player.beaten)}</span>
+                    </div>
+                    <span class="player-score">${player.points} pts</span>
+                </button>
+            `).join('');
+
+            const rows = playerList.querySelectorAll('.player-row');
+            rows.forEach(row => row.addEventListener('click', () => {
+                selectPlayer(Number(row.dataset.index));
+            }));
+        }
+
+        function selectPlayer(index) {
+            selectedIndex = index;
+            const player = filteredLeaderboard[index];
+            if (!player) return;
+
+            detailCard.style.display = 'none';
+            summaryCard.style.display = 'grid';
+            detailName.textContent = player.name;
+            detailPoints.textContent = `${player.points} points`;
+            detailBeaten.textContent = player.beaten;
+            detailCreated.textContent = player.created;
+
+            playerList.querySelectorAll('.player-row').forEach((row, idx) => {
+                row.classList.toggle('selected', idx === index);
+            });
+        }
+
+        function updateSearch() {
+            const query = searchInput.value.trim().toLowerCase();
+            filteredLeaderboard = defaultLeaderboard.filter(player =>
+                player.name.toLowerCase().includes(query) ||
+                player.beaten.toLowerCase().includes(query) ||
+                player.created.toLowerCase().includes(query)
+            );
+            selectedIndex = -1;
+            detailCard.style.display = 'block';
+            summaryCard.style.display = 'none';
+            renderPlayerList();
+        }
+
+        function navigate(offset) {
+            if (filteredLeaderboard.length === 0) return;
+            selectedIndex = selectedIndex < 0 ? 0 : (selectedIndex + offset + filteredLeaderboard.length) % filteredLeaderboard.length;
+            selectPlayer(selectedIndex);
+        }
+
+        searchInput.addEventListener('input', updateSearch);
+        prevBtn.addEventListener('click', () => navigate(-1));
+        nextBtn.addEventListener('click', () => navigate(1));
+
+        renderPlayerList();
     </script>
 </body>
 </html>
+
