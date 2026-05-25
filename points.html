@@ -299,7 +299,7 @@
 
         function getHardestBeatenLevel(beaten) {
             const beatenLevels = beaten.split(',').map(level => level.trim()).filter(Boolean);
-            if (!beatenLevels.length) return 'No level yet';
+            if (!beatenLevels.length) return 'null';
 
             return beatenLevels.reduce((hardest, current) => {
                 return getLevelPoints(current) > getLevelPoints(hardest) ? current : hardest;
