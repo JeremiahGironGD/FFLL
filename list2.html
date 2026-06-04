@@ -195,11 +195,11 @@
 </head>
 <body>
     <main>
-        <h1>Family and Friends Challenge List | Decoration List</h1>
-        <h4>Level placements are decided by JeremiahGironGD (Idekan)</h4>
+        <h1 data-i18n="pageTitle">Family and Friends Challenge List | Decoration List</h1>
+        <h4 data-i18n="subtitle">Level placements are decided by JeremiahGironGD (Idekan)</h4>
         <div class="top-actions">
-            <a class="primary-button" href="index.html">Back to main list</a>
-            <a class="primary-button" href="points.html">Points System</a>
+            <a class="primary-button" href="index.html?allowBack=1" data-i18n="backToMain">Back to main list</a>
+            <a class="primary-button" href="points.html" data-i18n="pointsSystem">Points System</a>
         </div>
         <h3>Levels:</h3>
         <div class="card-list">
@@ -261,6 +261,36 @@
         </div>
     </main>
         <script>
+        const FFLL_LOCALE_KEY = 'ffll-locale';
+        const pageTranslations = {
+            en: {
+                pageTitle: 'Family and Friends Challenge List | Decoration List',
+                subtitle: 'Level placements are decided by JeremiahGironGD (Idekan)',
+                backToMain: 'Back to main list',
+                pointsSystem: 'Points System'
+            },
+            es: {
+                pageTitle: 'Lista de Desafíos Familia y Amigos | Lista de Decoración',
+                subtitle: 'Las posiciones de nivel las decide JeremiahGironGD (Idekan)',
+                backToMain: 'Volver al listado principal',
+                pointsSystem: 'Sistema de Puntos'
+            }
+        };
+
+        function getSavedLocale() {
+            return localStorage.getItem(FFLL_LOCALE_KEY) || 'en';
+        }
+
+        function updateLocaleElements(locale) {
+            const map = pageTranslations[locale] || pageTranslations.en;
+            document.documentElement.lang = locale === 'es' ? 'es' : 'en';
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                el.textContent = map[el.dataset.i18n] || el.textContent;
+            });
+        }
+
+        updateLocaleElements(getSavedLocale());
+
         const REDIRECT_URL = "redirect.html";
         const POLL_INTERVAL_MS = 500;
         const allowBack = new URLSearchParams(window.location.search).get('allowBack') === '1';

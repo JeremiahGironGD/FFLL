@@ -209,9 +209,9 @@
 </head>
 <body>
     <main>
-        <a class="back-link" href="index.html">← Back to levels</a>
-        <h1 class="page-title">FFLL Points System</h1>
-        <p class="subtitle">Track rewards and progress for completing challenge levels.</p>
+        <a class="back-link" href="index.html?allowBack=1" data-i18n="backLink">← Back to levels</a>
+        <h1 class="page-title" data-i18n="pageTitle">FFLL Points System</h1>
+        <p class="subtitle" data-i18n="subtitle">Track rewards and progress for completing challenge levels.</p>
         <section class="info-card">
             <h2>How it works</h2>
             <p class="note">Earn points for each level you beat. The more higher up the level is on the list, the more points you earn.</p>
@@ -261,6 +261,34 @@
         </section>
     </main>
     <script>
+        const FFLL_LOCALE_KEY = 'ffll-locale';
+        const pageTranslations = {
+            en: {
+                pageTitle: 'FFLL Points System',
+                subtitle: 'Track rewards and progress for completing challenge levels.',
+                backLink: '← Back to levels'
+            },
+            es: {
+                pageTitle: 'Sistema de Puntos FFLL',
+                subtitle: 'Sigue las recompensas y el progreso al completar niveles de desafío.',
+                backLink: '← Volver a niveles'
+            }
+        };
+
+        function getSavedLocale() {
+            return localStorage.getItem(FFLL_LOCALE_KEY) || 'en';
+        }
+
+        function updateLocaleElements(locale) {
+            const map = pageTranslations[locale] || pageTranslations.en;
+            document.documentElement.lang = locale === 'es' ? 'es' : 'en';
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                el.textContent = map[el.dataset.i18n] || el.textContent;
+            });
+        }
+
+        updateLocaleElements(getSavedLocale());
+
         const defaultLeaderboard = [
             {
                 name: 'Idekan',
