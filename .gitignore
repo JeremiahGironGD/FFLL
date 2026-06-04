@@ -3,3 +3,10 @@
 
 # Just a message to Silas once he starts helping!(Will be taken out later)
 guide.unfsh.txt
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+.env*
+!.env.example
