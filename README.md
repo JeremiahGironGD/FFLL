@@ -1,4 +1,4 @@
 # FFLL
 The FFLL is a GD levels list dedicated to our family and friends that own GD!
 
-website: ffll-7hl.pages.dev
+website: https://ffll-7hl.pages.dev
