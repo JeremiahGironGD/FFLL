@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">FFLL</string>
+    <string name="title_activity_main">FFLL</string>
+    <string name="package_name">com.idekan.ffll</string>
+    <string name="custom_url_scheme">com.idekan.ffll</string>
+</resources>
