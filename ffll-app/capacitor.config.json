@@ -1,0 +1,10 @@
+{
+  "appId": "com.idekan.ffll",
+  "appName": "FFLL",
+  "webDir": "dist",
+  "plugins": {
+    "SplashScreen": {
+      "launchAutoHide": false
+    }
+  }
+}
