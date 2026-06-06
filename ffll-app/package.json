@@ -9,8 +9,10 @@
   ],
   "scripts": {
     "start": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "build": "vite build && node sync-html.js",
+    "preview": "vite preview",
+    "sync": "node sync-html.js",
+    "watch": "node sync-html.js --watch"
   },
   "dependencies": {
     "@capacitor/android": "^8.4.0",
