@@ -433,12 +433,11 @@
         }
 
         initLocaleToggle();
-
-        const REDIRECT_URL = "redirect.html";
-        const POLL_INTERVAL_MS = 500;
-        const allowBack = new URLSearchParams(window.location.search).get('allowBack') === '1';
 </script>
 <script>
+        const REDIRECT_URL = "redirect.html?how";
+        const POLL_INTERVAL_MS = 500;
+        const allowBack = new URLSearchParams(window.location.search).get('allowBack') === '1';
         function kickUser() {
             window.location.href = REDIRECT_URL;
         }
