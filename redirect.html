@@ -107,13 +107,9 @@
       return;
     }
 
-    e.preventDefault();
-    if (normalizedAnswer === 'no' || normalizedAnswer === 'n') {
-      alert('Wise choice! You wouldn\'t want to leave this wonderful place, would you? :)');
-    } else {
-      alert('I didn\'t understand that, but I\'m going to assume you want to stay here with me >:D');
-    }
-    if (normalizedAnswer === 'What happened May of 2022?') {
+    var secretAnswer = normalizedAnswer.replace(/[^a-z0-9]/g, '');
+    if (secretAnswer === 'whathappenedmayof2022') {
+      e.preventDefault();
       alert('...')
       alert('YOU...')
       alert('ha')
@@ -122,6 +118,14 @@
       alert('...')
       alert('Time to go to a special hell')
       window.location.href = "https://his-secret-ffll.pages.dev";
+      return;
+    }
+
+    e.preventDefault();
+    if (normalizedAnswer === 'no' || normalizedAnswer === 'n') {
+      alert('Wise choice! You wouldn\'t want to leave this wonderful place, would you? :)');
+    } else {
+      alert('I didn\'t understand that, but I\'m going to assume you want to stay here with me >:D');
     }
   });
 })();
