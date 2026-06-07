@@ -96,9 +96,10 @@
     alert('You really shouldn\'t have messed with the code');
 
     var answer = prompt('Do you really want to go back?(say no)');
-    answer = answer ? answer.trim().toLowerCase() : '';
+    answer = answer ? answer.trim() : '';
+    var normalizedAnswer = answer.toLowerCase();
 
-    if (answer === 'yes' || answer === 'y') {
+    if (normalizedAnswer === 'yes' || normalizedAnswer === 'y') {
       alert('I\'m sorry, but you can\'t leave. You have to stay here with me >:D');
       alert('I hope you like it here, because you\'re not going anywhere else!');
       alert('You should have thought about that before trying to mess with the code!');
@@ -107,12 +108,12 @@
     }
 
     e.preventDefault();
-    if (answer === 'no' || answer === 'n') {
+    if (normalizedAnswer === 'no' || normalizedAnswer === 'n') {
       alert('Wise choice! You wouldn\'t want to leave this wonderful place, would you? :)');
     } else {
       alert('I didn\'t understand that, but I\'m going to assume you want to stay here with me >:D');
     }
-    if (answer === 'What happened May of 2022?') {
+    if (normalizedAnswer === 'What happened May of 2022?') {
       alert('...')
       alert('YOU...')
       alert('ha')
@@ -120,7 +121,7 @@
       alert('hahahahah')
       alert('...')
       alert('Time to go to a special hell')
-      window.location.href = "his-secret-ffll.pages.dev";
+      window.location.href = "https://his-secret-ffll.pages.dev";
     }
   });
 })();
