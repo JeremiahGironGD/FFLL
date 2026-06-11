@@ -12,17 +12,17 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const SRC_DIR = path.join(__dirname, 'src');
-const ROOT_DIR = path.join(__dirname, '..');
+const SRC_DIR = path.resolve(__dirname, '..');
+const ROOT_DIR = path.join(__dirname, 'www');
 
 // Files/directories to ignore
-const IGNORE_PATTERNS = ['node_modules', '.git', 'dist', 'build', 'assets', 'css', 'js'];
+const IGNORE_PATTERNS = ['node_modules', '.git', 'dist', 'build', 'ffll-app'];
 
 function isIgnored(filePath) {
-  return IGNORE_PATTERNS.some(pattern => filePath.includes(pattern));
+  return IGNORE_PATTERNS.some(pattern => filePath.split(path.sep).includes(pattern));
 }
 
-function getHtmlFiles(dir) {
+function getProjectFiles(dir) {
   const files = [];
   
   try {
@@ -37,8 +37,16 @@ function getHtmlFiles(dir) {
       
       const stat = fs.statSync(fullPath);
       
-      if (stat.isFile() && item.endsWith('.html')) {
-        files.push(item);
+      if (stat.isDirectory()) {
+        // Copy directories like js, css, assets
+        const destDir = path.join(ROOT_DIR, item);
+        if (!fs.existsSync(destDir)) fs.mkdirSync(destDir, { recursive: true });
+        fs.cpSync(fullPath, destDir, { recursive: true });
+        console.log(`📁 Synced directory: ${item}`);
+      } else if (stat.isFile()) {
+        if (item.endsWith('.html') || item.endsWith('.ico') || item.endsWith('.png')) {
+          files.push(item);
+        }
       }
     });
   } catch (error) {
@@ -51,8 +59,13 @@ function getHtmlFiles(dir) {
 function syncFiles() {
   console.log('🔄 Syncing HTML files from ffll-app/src to root...');
   
-  const htmlFiles = getHtmlFiles(SRC_DIR);
+  const htmlFiles = getProjectFiles(SRC_DIR);
   
+  // Ensure destination directory exists
+  if (!fs.existsSync(ROOT_DIR)) {
+    fs.mkdirSync(ROOT_DIR, { recursive: true });
+  }
+
   if (htmlFiles.length === 0) {
     console.warn('⚠️  No HTML files found in src directory');
     return;
@@ -63,7 +76,10 @@ function syncFiles() {
 
   htmlFiles.forEach(file => {
     const srcPath = path.join(SRC_DIR, file);
-    const destPath = path.join(ROOT_DIR, file);
+    
+    // Force lowercase index.html for Capacitor compatibility
+    const fileName = file.toLowerCase() === 'index.html' ? 'index.html' : file;
+    const destPath = path.join(ROOT_DIR, fileName);
 
     try {
       fs.copyFileSync(srcPath, destPath);

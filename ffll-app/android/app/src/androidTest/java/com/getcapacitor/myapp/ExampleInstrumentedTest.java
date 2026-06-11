@@ -1,4 +1,4 @@
-package com.getcapacitor.myapp;
+package com.idekan.ffll;
 
 import static org.junit.Assert.assertEquals;
 
@@ -23,6 +23,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
-        assertEquals("com.getcapacitor.app", appContext.getPackageName());
+        assertEquals("com.idekan.ffll", appContext.getPackageName());
     }
 }

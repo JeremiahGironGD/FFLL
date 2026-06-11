@@ -1,0 +1,488 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FFLL</title>
+    <link rel="icon" type="image/x-icon" href="Favicon.ico">
+    <style>
+        :root {
+            color-scheme: dark;
+            --bg: #110917;
+            --surface: rgba(28, 16, 35, 0.9);
+            --surface-strong: rgba(42, 24, 58, 0.95);
+            --border: rgba(255, 255, 255, 0.12);
+            --text: #eef3ff;
+            --muted: #c3cad9;
+            --accent: #b86af2;
+            --accent-soft: #8c5eea;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Inter, system-ui, sans-serif;
+            background: radial-gradient(circle at top right, rgba(192, 145, 255, 0.16), transparent 28%),
+                        radial-gradient(circle at bottom left, rgba(255, 94, 202, 0.12), transparent 24%),
+                        linear-gradient(180deg, #120613 0%, #100511 100%);
+            background-attachment: fixed;
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            padding: 32px 16px;
+        }
+
+        main {
+            width: min(720px, 100%);
+        }
+
+        h1 {
+            margin: 0 0 8px;
+            font-size: clamp(2rem, 3vw, 2.6rem);
+            letter-spacing: -0.03em;
+        }
+
+        h4 {
+            margin: 0 0 24px;
+            color: var(--muted);
+            font-weight: 500;
+        }
+
+        h3 {
+            margin: 0 0 16px;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            font-size: 0.95rem;
+        }
+
+        .site-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin: 0 0 32px;
+            padding: 18px 24px;
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            backdrop-filter: blur(16px);
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.12);
+        }
+
+        .brand {
+            font-size: 1.05rem;
+            font-weight: 800;
+            letter-spacing: 0.32em;
+            text-transform: uppercase;
+            color: #eef3ff;
+            font-family: Inter, system-ui, sans-serif;
+            white-space: nowrap;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 36px;
+            flex-wrap: wrap;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .nav-item {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            text-decoration: none;
+            color: var(--text);
+            text-align: center;
+            transition: transform 180ms ease, color 180ms ease;
+        }
+
+        .nav-item:hover {
+            transform: translateY(-1px);
+            color: #ffffff;
+        }
+
+        .nav-item-label {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            color: var(--muted);
+        }
+
+        .nav-item-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #f7f4ff;
+            white-space: nowrap;
+        }
+
+        .nav-item-title.demonlist::after {
+            content: '▼';
+            margin-left: 6px;
+            font-size: 0.7rem;
+            color: var(--muted);
+        }
+
+        .locale-switch {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text);
+            font-weight: 700;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: background 180ms ease, transform 180ms ease;
+        }
+
+        .locale-switch:hover {
+            background: rgba(255, 255, 255, 0.16);
+            transform: translateY(-1px);
+        }
+
+        .locale-flag {
+            font-size: 1rem;
+        }
+
+        .card-list {
+            display: grid;
+            gap: 16px;
+        }
+
+        .level-card {
+            display: block;
+            position: relative;
+            padding: 18px 22px;
+            border-radius: 24px;
+            background: linear-gradient(135deg, rgba(46, 24, 70, 0.96), rgba(20, 10, 26, 0.94));
+            border: 1px solid var(--border);
+            text-decoration: none;
+            color: inherit;
+            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.25);
+            transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+            overflow: hidden;
+        }
+
+        .level-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at top left, rgba(184, 106, 242, 0.16), transparent 34%),
+                        radial-gradient(circle at bottom right, rgba(99, 179, 255, 0.1), transparent 30%);
+            pointer-events: none;
+        }
+
+        .level-card .points-label {
+            position: absolute;
+            right: 18px;
+            bottom: 16px;
+            z-index: 2;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(227, 231, 242, 0.95);
+            font-size: 0.82rem;
+            line-height: 1.2;
+            padding: 5px 10px;
+            border-radius: 999px;
+            background: rgba(12, 12, 22, 0.75);
+            white-space: nowrap;
+            pointer-events: none;
+        }
+
+        .level-card::after {
+            content: "";
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 60%;
+            border-radius: 999px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0));
+            opacity: 0.7;
+        }
+
+        .level-card span {
+            position: relative;
+            display: block;
+            z-index: 1;
+        }
+
+        .level-card .label {
+            font-size: 0.95rem;
+            color: var(--accent);
+            letter-spacing: 0.08em;
+            margin-bottom: 6px;
+        }
+
+        .level-card .title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: #f9f7ff;
+        }
+
+        .level-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 26px 55px rgba(0, 0, 0, 0.32);
+            border-color: rgba(255, 255, 255, 0.24);
+        }
+
+        .level-card:hover .title {
+            color: #ffffff;
+        }
+
+        .level-card.gold {
+            background: linear-gradient(135deg, #3e2d15 0%, #6d561b 100%);
+        }
+
+        .level-card.silver {
+            background: linear-gradient(135deg, #2a2b37 0%, #5d6572 100%);
+        }
+
+        .level-card.bronze {
+            background: linear-gradient(135deg, #3a2117 0%, #7d5037 100%);
+        }
+
+        .level-card.dark {
+            background: linear-gradient(135deg, #171717 0%, #312b3d 100%);
+        }
+    </style>
+    <script src="js/updateChecker.js"></script>
+</head>
+<body>
+    <main>
+        <h1 data-i18n="pageTitle">Family and Friends Challenge List</h1>
+        <h4 data-i18n="subtitle">Level placements are decided by JeremiahGironGD (Idekan)</h4>
+        <div class="site-header">
+            <div class="brand" data-i18n="brand">FFLL</div>
+            <nav class="nav-links" aria-label="Top navigation">
+                <a class="nav-item" href="points.html">
+                    <span class="nav-item-label" data-i18n="pointsLabel">Points</span>
+                    <span class="nav-item-title" data-i18n="pointsTitle">Points System</span>
+                </a>
+                <a class="nav-item" href="list2.html">
+                    <span class="nav-item-label" data-i18n="decorationsLabel">Decorations</span>
+                    <span class="nav-item-title" data-i18n="decorationsTitle">Decoration List</span>
+                </a>
+                <a class="nav-item" href="rules.html">
+                    <span class="nav-item-label" data-i18n="rulesLabel">Rules</span>
+                    <span class="nav-item-title demonlist" data-i18n="rulesTitle">Level Rules (WIP)</span>
+                </a>
+                <a class="nav-item" href="moreinfo.html">
+                    <span class="nav-item-label" data-i18n="infoLabel">Info</span>
+                    <span class="nav-item-title" data-i18n="infoTitle">More Info (WIP)</span>
+                </a>
+            </nav>
+            <button type="button" id="locale-switch" class="locale-switch" aria-label="Toggle language">
+                <span class="locale-flag" id="locale-flag">🇺🇸</span>
+                <span id="locale-label">EN</span>
+            </button>
+        </div>
+        <h3 data-i18n="levelsText">Levels:</h3>
+        <div class="card-list">
+            </a>
+            <a id="Back On Track Full" class="level-card gold" href="BoTF.html">
+                <span class="label">#1</span>
+                <span class="title">Back On Track Full</span>
+                <span class="points-label">Points: 100</span>
+            </a>
+            <a id="" class="level-card silver" href="idrinkbatteryacid.html">
+                <span class="label">#2</span>
+                <span class="title">IDrinkBatteryAcid</span>
+                <span class="points-label">Points: 80</span>
+            </a>
+            <a id="that-one-purple-level" class="level-card bronze" href="thatonepurplelevel.html">
+                <span class="label">#3</span>
+                <span class="title">ThatOnePurpleLevel</span>
+                <span class="points-label">Points: 75</span>
+            </a>
+            <a id="forever-and-ever-preview" class="level-card dark" href="foreverandeverpreview.html">
+                <span class="label">#4</span>
+                <span class="title">Forever & Ever Preview</span>
+                <span class="points-label">Points: 50</span>
+            </a>
+            <a id="wave-17-remake" class="level-card dark" href="wave17remake.html">
+                <span class="label">#5</span>
+                <span class="title">Wave 17 Remake</span>
+                <span class="points-label">Points: 50</span>
+            </a>
+            <a id="jace-circles" class="level-card dark" href="jacecircles.html">
+                <span class="label">#6</span>
+                <span class="title">Jace Circles</span>
+                <span class="points-label">Points: 50</span>
+            </a>
+            <a id="jace-challenge" class="level-card dark" href="jacechallenge.html">
+                <span class="label">#7</span>
+                <span class="title">Jace Challenge</span>
+                <span class="points-label">Points: 50</span>
+            </a>
+            <a id="sonic-blaster" class="level-card dark" href="sonicblaster.html">
+                <span class="label">#8</span>
+                <span class="title">Sonic Blaster</span>
+                <span class="points-label">Points: 50</span>
+            </a>
+                        <a id="" class="level-card dark" href="javascript:void()">
+                <span class="label">#9</span>
+                <span class="title"> Not decided</span>
+                <span class="points-label">Points: 50</span>
+            </a>
+                        <a id="" class="level-card dark" href="javascript:void()">
+                <span class="label">#10</span>
+                <span class="title"> Not decided</span>
+                <span class="points-label">Points: 50</span>
+            </a>
+            </a>
+                        <a id="" class="level-card dark" href="fallendimension.html">
+                <span class="label">#0</span>
+                <span class="title">Coming Soon(Fallen Dimension)</span>
+                <span class="points-label">Points: ??</span>
+            </a>
+        </div>
+    </main>
+    <script>
+        const FFLL_LOCALE_KEY = 'ffll-locale';
+        const pageTranslations = {
+            en: {
+                localeFlag: '🇺🇸',
+                localeLabel: 'EN',
+                brand: 'FFLL',
+                pointsLabel: 'Points',
+                pointsTitle: 'Points System',
+                decorationsLabel: 'Decorations',
+                decorationsTitle: 'Decoration List',
+                rulesLabel: 'Rules',
+                rulesTitle: 'Level Rules (WIP)',
+                infoLabel: 'Info',
+                infoTitle: 'More Info (WIP)',
+                pageTitle: 'Family and Friends Challenge List',
+                subtitle: 'Level placements are decided by JeremiahGironGD (Idekan)',
+                levelsText: 'Levels:'
+            },
+            es: {
+                localeFlag: '🇪🇸',
+                localeLabel: 'ES',
+                brand: 'FFLL',
+                pointsLabel: 'Puntos',
+                pointsTitle: 'Sistema de Puntos',
+                decorationsLabel: 'Decoraciones',
+                decorationsTitle: 'Lista de Decoración',
+                rulesLabel: 'Reglas',
+                rulesTitle: 'Reglas del Nivel (WIP)',
+                infoLabel: 'Info',
+                infoTitle: 'Más Información (WIP)',
+                pageTitle: 'Lista de Desafíos Familia y Amigos',
+                subtitle: 'Las posiciones de nivel las decide JeremiahGironGD (Idekan)',
+                levelsText: 'Niveles:'
+            }
+        };
+
+        function getSavedLocale() {
+            return localStorage.getItem(FFLL_LOCALE_KEY) || 'en';
+        }
+
+        function saveLocale(locale) {
+            localStorage.setItem(FFLL_LOCALE_KEY, locale);
+        }
+
+        let __ffllSpanishAlertShown = false;
+
+        function updateLocaleElements(locale) {
+            const map = pageTranslations[locale] || pageTranslations.en;
+            document.documentElement.lang = locale === 'es' ? 'es' : 'en';
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.dataset.i18n;
+                if (!key || typeof map[key] === 'undefined') return;
+                if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                    el.setAttribute('placeholder', map[key]);
+                } else {
+                    el.textContent = map[key];
+                }
+            });
+            const flag = document.getElementById('locale-flag');
+            const label = document.getElementById('locale-label');
+            if (flag) flag.textContent = map.localeFlag;
+            if (label) label.textContent = map.localeLabel;
+            if (locale === 'es' && !__ffllSpanishAlertShown) {
+                alert('Spanish is not yet finished, proceed | El español aún no ha terminado, ¿proceder?');
+                __ffllSpanishAlertShown = true;
+            }
+        }
+
+        function initLocaleToggle() {
+            const locale = getSavedLocale();
+            updateLocaleElements(locale);
+            const switchEl = document.getElementById('locale-switch');
+            if (!switchEl) return;
+            switchEl.addEventListener('click', () => {
+                const next = getSavedLocale() === 'en' ? 'es' : 'en';
+                saveLocale(next);
+                updateLocaleElements(next);
+            });
+        }
+
+        initLocaleToggle();
+</script>
+<script>
+        const REDIRECT_URL = "redirect.html?how";
+        const POLL_INTERVAL_MS = 500;
+        const allowBack = new URLSearchParams(window.location.search).get('allowBack') === '1';
+        function kickUser() {
+            window.location.href = REDIRECT_URL;
+        }
+
+        function detectDevTools() {
+            if (typeof window.devtools === 'object' && window.devtools?.isOpen) {
+                return true;
+            }
+
+            const widthDiff = Math.abs(window.outerWidth - window.innerWidth);
+            const heightDiff = Math.abs(window.outerHeight - window.innerHeight);
+            if (widthDiff > 160 || heightDiff > 160) {
+                return true;
+            }
+
+            let open = false;
+            const detector = new Image();
+            Object.defineProperty(detector, 'id', {
+                get() {
+                    open = true;
+                    return '';
+                }
+            });
+            console.log('%c', detector);
+            return open;
+        }
+
+        function checkDevTools() {
+            if (allowBack) return;
+            if (detectDevTools()) {
+                kickUser();
+            }
+        }
+
+        if (!allowBack) {
+            checkDevTools();
+            window.addEventListener('resize', checkDevTools);
+            window.addEventListener('keydown', event => {
+            const key = event.key?.toLowerCase();
+            if (key === 'f12' || ((event.ctrlKey || event.metaKey) && event.shiftKey && key === 'i')) {
+                kickUser();
+            }
+        });
+        setInterval(checkDevTools, POLL_INTERVAL_MS);
+        }
+    </script>
+</body>
+</html>

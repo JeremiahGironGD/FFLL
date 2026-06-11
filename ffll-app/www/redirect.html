@@ -1,0 +1,133 @@
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>???</title>
+<style>
+    :root {
+        color-scheme: dark;
+        --bg: #110917;
+        --surface: rgba(28, 16, 35, 0.94);
+        --border: rgba(255, 255, 255, 0.12);
+        --text: #eef3ff;
+        --muted: #c3cad9;
+        --accent: #b86af2;
+    }
+    * { box-sizing: border-box; }
+    body {
+        margin: 0;
+        min-height: 100vh;
+        
+        font-family: Inter, system-ui, sans-serif;
+        background: radial-gradient(circle at top right, rgba(0, 0, 0, 0.16), transparent 28%),
+                    radial-gradient(circle at bottom left, rgba(184, 10, 10, 0.501), transparent 24%),
+                    linear-gradient(180deg, #000000 0%, #100511 100%);
+        background-attachment: fixed;
+        color: var(--text);
+        display: flex;
+        justify-content: center;
+        padding: 32px 16px;
+    }
+    main { width: min(760px, 100%); }
+    .page-title { margin: 0 0 10px; font-size: clamp(2rem, 3vw, 2.4rem); }
+    .subtitle { margin: 0 0 24px; color: var(--muted); }
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 24px;
+        color: red;
+        text-decoration: none;
+        font-weight: 600;
+    }
+    .back-link::before {
+        content: "";
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: currentColor;
+        opacity: 0.4;
+    }
+    .card-list { display: grid; gap: 20px; }
+    .info-card, .video-card {
+        background: linear-gradient(135deg, rgba(135, 6, 6, 0.92), rgba(20, 10, 26, 0.96));
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        padding: 24px;
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.22);
+    }
+    .info-card h2, .video-card h2 { margin: 0 0 16px; color: #fff; }
+    .info-row { display: grid; gap: 12px; }
+</style>
+</head>
+<body>
+<main>
+<a id="fake-back-link" class="back-link" href="index.html?allowBack=1">
+    ← Back to Levels
+</a>
+<p>
+    <a class="back-link here" href="index.html?allowBack=1">
+        ← Quick Exit(Skip the Easter egg)
+    </a>
+</p>
+    <div class="card-list">
+        <div class="info-card">
+            <h1>Hello there...</h1>
+            <p>Were you really messing with the code</p>
+            <p>Or were you mindlessly wasting a lot of data by spamming different parts of the site?</p>
+            <p>Either way... did you think that you would go unnoticed?</p>
+            <p>Well, you've been caught in the act!</p>
+            <p>There's no way back...</p>
+            <p>Enjoy your stay!</p>
+            <p>If you didn't inspect element or weren't constantly going to different pages and got here please report it at <a href="https://github.com/JeremiahGironGD/FFLL/issues">https://github.com/JeremiahGironGD/FFLL/issues</a> so I can fix it</p>
+            <p>- The FFLL Team!</p>
+        </div>
+    </div>
+</main>
+</body>
+<script>
+
+(function(){
+  var a = document.getElementById('fake-back-link');
+  if(!a) return;
+  a.addEventListener('click', function(e) {
+    alert('You really thought you could go back??');
+    alert('Well, you can\'t. This is your new home now >:)');
+    alert('You really shouldn\'t have messed with the code');
+
+    var answer = prompt('Do you really want to go back?(say no)');
+    answer = answer ? answer.trim() : '';
+    var normalizedAnswer = answer.toLowerCase();
+
+    if (normalizedAnswer === 'yes' || normalizedAnswer === 'y') {
+      alert('I\'m sorry, but you can\'t leave. You have to stay here with me >:D');
+      alert('I hope you like it here, because you\'re not going anywhere else!');
+      alert('You should have thought about that before trying to mess with the code!');
+      alert('Fine... I\'ll let you go back, but the Index page will remember, just like I will NOT remember you, you think I\'ll remember YOU, you swine');
+      return;
+    }
+
+    var secretAnswer = normalizedAnswer.replace(/[^a-z0-9]/g, '');
+    if (secretAnswer === 'whathappenedmayof2022') {
+      e.preventDefault();
+      alert('...')
+      alert('YOU...')
+      alert('ha')
+      alert('haha')
+      alert('hahahahah')
+      alert('...')
+      alert('Time to go to a special hell')
+      window.location.href = "https://his-secret-ffll.pages.dev";
+      return;
+    }
+
+    e.preventDefault();
+    if (normalizedAnswer === 'no' || normalizedAnswer === 'n') {
+      alert('Wise choice! You wouldn\'t want to leave this wonderful place, would you? :)');
+    } else {
+      alert('I didn\'t understand that, but I\'m going to assume you want to stay here with me >:D');
+    }
+  });
+})();
+</script>
+</html>

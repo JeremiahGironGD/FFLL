@@ -26,7 +26,6 @@ public class MainActivity extends BridgeActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        checkForUpdates();
     }
 
     @Override
@@ -45,15 +44,15 @@ public class MainActivity extends BridgeActivity {
             return;
         }
 
+        // Update check timestamp immediately to prevent redundant threads
+        prefs.edit().putLong(LAST_UPDATE_CHECK_KEY, now).apply();
+
         // Run the check in a background thread
         new Thread(() -> {
             try {
                 URL url = new URL(GITHUB_API_URL);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
-                
-                // Update check timestamp immediately to prevent spamming on failures
-                prefs.edit().putLong(LAST_UPDATE_CHECK_KEY, System.currentTimeMillis()).apply();
 
                 conn.setRequestProperty("User-Agent", "FFLL-App");
                 conn.setConnectTimeout(5000);
@@ -76,9 +75,6 @@ public class MainActivity extends BridgeActivity {
                 JSONObject json = new JSONObject(response.toString());
                 String tagName = json.getString("tag_name");
                 String latestVersion = tagName.replaceAll("^v", "");
-
-                // Update check timestamp
-                prefs.edit().putLong(LAST_UPDATE_CHECK_KEY, now).apply();
 
                 if (isNewerVersion(latestVersion, CURRENT_VERSION)) {
                     runOnUiThread(() -> showUpdateNotification(latestVersion, json));
