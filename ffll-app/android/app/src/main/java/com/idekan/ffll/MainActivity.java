@@ -51,6 +51,11 @@ public class MainActivity extends BridgeActivity {
                 URL url = new URL(GITHUB_API_URL);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
+                
+                // Update check timestamp immediately to prevent spamming on failures
+                prefs.edit().putLong(LAST_UPDATE_CHECK_KEY, System.currentTimeMillis()).apply();
+
+                conn.setRequestProperty("User-Agent", "FFLL-App");
                 conn.setConnectTimeout(5000);
                 conn.setReadTimeout(5000);
 
@@ -123,6 +128,7 @@ public class MainActivity extends BridgeActivity {
 
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("🚀 Update Available")
+                    .setIcon(this.getApplicationInfo().icon)
                     .setMessage("A new version (" + latestVersion + ") of FFLL is available! Update now to get the latest features and improvements.")
                     .setPositiveButton("Update Now", (dialog, which) -> {
                         Intent intent = new Intent(Intent.ACTION_VIEW);

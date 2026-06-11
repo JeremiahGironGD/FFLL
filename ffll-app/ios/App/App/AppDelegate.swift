@@ -47,7 +47,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let urlString = "https://api.github.com/repos/JeremiahGironGD/FFLL/releases/latest"
         guard let url = URL(string: urlString) else { return }
         
-        URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
+        var request = URLRequest(url: url)
+        request.setValue("FFLL-App", forHTTPHeaderField: "User-Agent")
+        
+        URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
+            // Update check timestamp immediately to prevent spamming
+            UserDefaults.standard.set(Date().timeIntervalSince1970, forKey: lastCheckKey)
+            
             guard let data = data, error == nil else { return }
             
             do {
@@ -56,9 +62,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     let latestVersion = tagName.replacingOccurrences(of: "v", with: "")
                     
                     if self?.isNewerVersion(latestVersion, currentVersion: currentVersion) ?? false {
-                        // Update check timestamp
-                        UserDefaults.standard.set(Date().timeIntervalSince1970, forKey: lastCheckKey)
-                        
                         DispatchQueue.main.async {
                             self?.showUpdateNotification(latestVersion: latestVersion, json: json)
                         }
@@ -111,7 +114,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         // Update action
         alertController.addAction(UIAlertAction(title: "Update Now", style: .default) { _ in
-            if let url = URL(string: downloadUrl) {
+            if let url = URL(string: downloadUrl), UIApplication.shared.canOpenURL(url) {
                 UIApplication.shared.open(url)
             }
         })
@@ -119,8 +122,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Later action
         alertController.addAction(UIAlertAction(title: "Later", style: .cancel))
         
-        if let rootVC = keyWindow.rootViewController {
-            rootVC.present(alertController, animated: true)
+        // Find the top-most view controller to present the alert
+        var topController = keyWindow.rootViewController
+        while let presentedViewController = topController?.presentedViewController {
+            topController = presentedViewController
+        }
+        
+        if let topVC = topController {
+            topVC.present(alertController, animated: true)
         }
     }
 

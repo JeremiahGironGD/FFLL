@@ -15,7 +15,7 @@ const UpdateChecker = (() => {
      */
     function parseVersion(versionString) {
         try {
-            const version = versionString.replace(/^v/, '').split('.').map(Number);
+            const version = (versionString || '').replace(/^v/, '').split('.').map(Number);
             return version[0] * 10000 + (version[1] || 0) * 100 + (version[2] || 0);
         } catch {
             return 0;
@@ -69,14 +69,35 @@ const UpdateChecker = (() => {
             backdrop-filter: blur(16px);
         `;
 
+        const header = document.createElement('div');
+        header.style.cssText = `
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        `;
+
+        const logo = document.createElement('img');
+        logo.src = 'favicon.ico';
+        logo.style.cssText = `
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        `;
+        logo.onerror = () => logo.remove();
+
         const title = document.createElement('h2');
         title.style.cssText = `
-            margin: 0 0 12px;
+            margin: 0;
             color: #b86af2;
             font-size: 1.5rem;
             font-weight: 700;
         `;
         title.textContent = '🚀 Update Available';
+
+        header.appendChild(logo);
+        header.appendChild(title);
 
         const message = document.createElement('p');
         message.style.cssText = `
@@ -163,7 +184,7 @@ const UpdateChecker = (() => {
         buttonContainer.appendChild(updateBtn);
         buttonContainer.appendChild(laterBtn);
 
-        content.appendChild(title);
+        content.appendChild(header);
         content.appendChild(message);
         content.appendChild(subMessage);
         content.appendChild(buttonContainer);
@@ -185,7 +206,15 @@ const UpdateChecker = (() => {
                 }
             }
 
-            const response = await fetch(GITHUB_API_URL);
+            // Update last check timestamp immediately to prevent spamming
+            localStorage.setItem(UPDATE_CHECK_KEY, Date.now().toString());
+
+            const response = await fetch(GITHUB_API_URL, {
+                headers: {
+                    'Accept': 'application/vnd.github.v3+json',
+                    'User-Agent': 'FFLL-App'
+                }
+            });
             if (!response.ok) {
                 console.warn('Failed to check for updates');
                 return;
@@ -212,9 +241,6 @@ const UpdateChecker = (() => {
                 if (!downloadUrl) {
                     downloadUrl = data.html_url;
                 }
-
-                // Update last check timestamp
-                localStorage.setItem(UPDATE_CHECK_KEY, Date.now().toString());
 
                 // Show the notification
                 showUpdateNotification(latestVersion, downloadUrl);
