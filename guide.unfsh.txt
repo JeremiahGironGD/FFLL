@@ -28,3 +28,7 @@ youtube.com link, it cannot be a youtu.be link it has to be a youtube.com link
 Leaderboard,
 The Leaderboard can be found in points.html, in there you will look for a script there you will find the const in the const you will see a { or a bracket in that bracket you will see
 3 different rows, name:, points:, beaten:, and created: there you will make the changes and actually beat levels!
+
+Points,
+The points system is simple to navigate, at the bottom you will see a <script> in that <script> there will be javascript in there look for "const defaultLeaderboard" under there will hide the leaderboard to edit,
+please ignore the redirect script 
