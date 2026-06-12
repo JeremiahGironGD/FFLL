@@ -6,7 +6,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
         return ApplicationDelegateProxy.shared.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
 
@@ -26,12 +26,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-        checkForUpdates()
+        self.checkForUpdates()
     }
 
     func checkForUpdates() {
         let lastCheckKey = "ffll-last-update-check-ios"
-        let currentVersion = "1.0.0"
+        // Dynamically get the version from the project's Info.plist
+        let currentVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"
         let updateCheckInterval: TimeInterval = 24 * 60 * 60 // 24 hours
         
         // Check if we've already checked recently
@@ -73,14 +74,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func isNewerVersion(_ latestVersion: String, currentVersion: String) -> Bool {
-        return latestVersion.compare(currentVersion, options: .numeric) == .orderedDescending
+        // Use ComparisonResult explicitly to avoid ambiguity and improve readability
+        return latestVersion.compare(currentVersion, options: .numeric) == ComparisonResult.orderedDescending
     }
     
     func showUpdateNotification(latestVersion: String, json: [String: Any]) {
         // Get the app's key window
         guard let keyWindow = UIApplication.shared.connectedScenes
             .compactMap({ $0 as? UIWindowScene })
-            .first?.windows
+            .flatMap({ $0.windows })
             .first(where: { $0.isKeyWindow }) else { return }
         
         let alertController = UIAlertController(
@@ -103,8 +105,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         // Update action
         alertController.addAction(UIAlertAction(title: "Update Now", style: .default) { _ in
-            if let url = URL(string: downloadUrl), UIApplication.shared.canOpenURL(url) {
-                UIApplication.shared.open(url)
+            if let url = URL(string: downloadUrl) {
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
             }
         })
         
