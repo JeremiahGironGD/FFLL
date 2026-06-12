@@ -73,17 +73,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func isNewerVersion(_ latestVersion: String, currentVersion: String) -> Bool {
-        let latest = versionToNumber(latestVersion)
-        let current = versionToNumber(currentVersion)
-        return latest > current
-    }
-    
-    func versionToNumber(_ version: String) -> Int {
-        let parts = version.split(separator: ".").compactMap { Int($0) }
-        let major = parts.count > 0 ? parts[0] : 0
-        let minor = parts.count > 1 ? parts[1] : 0
-        let patch = parts.count > 2 ? parts[2] : 0
-        return major * 10000 + minor * 100 + patch
+        return latestVersion.compare(currentVersion, options: .numeric) == .orderedDescending
     }
     
     func showUpdateNotification(latestVersion: String, json: [String: Any]) {
