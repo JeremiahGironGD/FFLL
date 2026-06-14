@@ -1,11 +1,11 @@
 /**
  * Update Checker Module (Commits-Based)
- * Tracks the latest commit on the main branch and notifies the user of updates.
+ * Tracks the latest commit in the ffll-app folder and notifies the user of updates.
  */
 
 const UpdateChecker = (() => {
     const GITHUB_REPO = 'JeremiahGironGD/FFLL';
-    const GITHUB_API_URL = `https://api.github.com/repos/${GITHUB_REPO}/commits?per_page=1&sha=main`;
+    const GITHUB_API_URL = `https://api.github.com/repos/${GITHUB_REPO}/commits?per_page=1&path=ffll-app`;
     const LOCAL_COMMIT_KEY = 'ffll-last-known-commit';
     let isChecking = false;
 
@@ -123,7 +123,7 @@ const UpdateChecker = (() => {
 
         try {
             const minDelay = new Promise(resolve => setTimeout(resolve, 1200));
-            
+
             const response = await fetch(GITHUB_API_URL, {
                 method: 'GET',
                 cache: 'no-store',
@@ -139,26 +139,21 @@ const UpdateChecker = (() => {
 
             const latestCommitSha = commits[0].sha;
             const commitMessage = commits[0].commit.message;
+            const lastKnownSha = localStorage.getItem(LOCAL_COMMIT_KEY);
 
             await minDelay;
 
-            const currentStoredSha = localStorage.getItem(LOCAL_COMMIT_KEY);
-
-            // 👇 FOR TESTING: Uncomment the line below to clear storage and force the update popup UI to show up! 👇
-            // localStorage.removeItem(LOCAL_COMMIT_KEY);
-
-            if (!currentStoredSha) {
+            if (!lastKnownSha) {
                 localStorage.setItem(LOCAL_COMMIT_KEY, latestCommitSha);
-                console.log('UpdateChecker: First run, initialized local hash tracking.');
+                console.log('UpdateChecker: Initialized tracking with current commit.');
                 return;
             }
 
-            if (latestCommitSha !== currentStoredSha) {
-                console.log('UpdateChecker: New commit detected on main branch.');
-                let downloadUrl = `https://github.com/${GITHUB_REPO}`;
+            if (latestCommitSha !== lastKnownSha) {
+                const downloadUrl = `https://github.com/${GITHUB_REPO}/tree/main/ffll-app`;
                 showUpdateNotification(commitMessage, latestCommitSha, downloadUrl);
             } else {
-                console.log('UpdateChecker: App is fully synchronized with main branch.');
+                console.log('UpdateChecker: App is up to date.');
             }
         } catch (error) {
             console.warn('Update check failed:', error);
@@ -242,7 +237,7 @@ const UpdateChecker = (() => {
             font-size: 0.95rem;
             line-height: 1.6;
         `;
-        message.textContent = `Change Log: "${commitMessage}"`;
+        message.textContent = `Update Found: "${commitMessage}"`;
 
         const subMessage = document.createElement('p');
         subMessage.style.cssText = `
@@ -250,7 +245,7 @@ const UpdateChecker = (() => {
             color: #c3cad9;
             font-size: 0.85rem;
         `;
-        subMessage.textContent = 'A new build has been pushed to the repository. Update now to sync changes.';
+        subMessage.textContent = 'A new build is available in the repository. Tap below to see the latest files.';
 
         const buttonContainer = document.createElement('div');
         buttonContainer.style.cssText = `
@@ -259,9 +254,7 @@ const UpdateChecker = (() => {
             margin-top: 24px;
         `;
 
-        const updateBtn = document.createElement('a');
-        updateBtn.href = downloadUrl;
-        updateBtn.target = '_blank';
+        const updateBtn = document.createElement('button');
         updateBtn.style.cssText = `
             flex: 1;
             padding: 12px 16px;
@@ -273,13 +266,27 @@ const UpdateChecker = (() => {
             font-size: 0.9rem;
             cursor: pointer;
             text-align: center;
-            text-decoration: none;
             transition: transform 180ms, box-shadow 180ms;
         `;
         updateBtn.textContent = 'Get Update';
         
-        updateBtn.onclick = () => {
+        updateBtn.onclick = async () => {
             localStorage.setItem(LOCAL_COMMIT_KEY, nextSha);
+            
+            // Native Browser View Integration using Capacitor Plugins
+            if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Browser) {
+                try {
+                    await window.Capacitor.Plugins.Browser.open({ 
+                        url: downloadUrl,
+                        presentationStyle: 'fullscreen'
+                    });
+                } catch (err) {
+                    console.error('Capacitor Browser error, falling back:', err);
+                    window.open(downloadUrl, '_blank');
+                }
+            } else {
+                window.open(downloadUrl, '_blank');
+            }
             modal.remove();
         };
         

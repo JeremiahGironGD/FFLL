@@ -28,10 +28,17 @@ rootFiles.forEach(file => {
 });
 
 // 3. Copy JavaScript files from src/js to www/js
-if (fs.existsSync(srcJsDir)) {
-    const jsFiles = fs.readdirSync(srcJsDir);
-    jsFiles.forEach(file => {
-        fs.copyFileSync(path.join(srcJsDir, file), path.join(destJsDir, file));
-        console.log(`Synced Script: js/${file} -> www/js/`);
-    });
+try {
+    // Target resolution paths
+    const sourcePath = path.join(__dirname, 'src', 'js', 'updateChecker.js');
+    const targetDir = path.join(__dirname, 'www', 'js');
+    const targetPath = path.join(targetDir, 'updateChecker.js');
+
+    if (!fs.existsSync(targetDir)) {
+        fs.mkdirSync(targetDir, { recursive: true });
+    }
+    fs.copyFileSync(sourcePath, targetPath);
+    console.log('🏁 [Build Module] updateChecker.js successfully compiled into www/js/');
+} catch (error) {
+    console.error('🚨 [Build Error] Failed to write file down into target distribution folder:', error);
 }
