@@ -1,82 +1,12 @@
 /**
- * Update Checker Module
- * Checks GitHub releases for new app versions and notifies user
- */
-
-const UpdateChecker = (() => {
-    const GITHUB_REPO = 'JeremiahGironGD/FFLL';
-    const GITHUB_API_URL = `https://api.github.com/repos/${GITHUB_REPO}/releases/latest`;
-    const UPDATE_CHECK_KEY = 'ffll-last-update-check';
-    const CURRENT_VERSION = '1.0.0'; // Ensure this matches your current build version
-    let isChecking = false;
-
-    /**
-     * Parse semantic version string (e.g., "1.2.3") to a comparable number
-     */
-    function parseVersion(versionString) {
-        try {
-            const version = (versionString || '').replace(/^v/, '').split('.').map(Number);
-            return version[0] * 10000 + (version[1] || 0) * 100 + (version[2] || 0);
-        } catch {
-            return 0;
-        }
-    }
-
-    /**
-     * Check if newer version is available
-     */
-    function isNewerVersion(latestVersion, currentVersion) {
-        return parseVersion(latestVersion) > parseVersion(currentVersion);
-    }
-
-    /**
-     * Loading bar animations for the check process
-     */
-    function showLoading() {
-        let loader = document.getElementById('ffll-update-loader');
-        if (!loader) {
-            loader = document.createElement('div');
-            loader.id = 'ffll-update-loader';
-            loader.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                height: 4px;
-                background: linear-gradient(90deg, #b86af2, #f26ade);
-                z-index: 20000;
-                width: 0%;
-                transition: width 0.3s ease-out, opacity 0.3s ease;
-                box-shadow: 0 0 10px rgba(184, 106, 242, 0.8);
-            `;
-            document.body.appendChild(loader);
-        }
-        loader.style.opacity = '1';
-        loader.style.width = '0%';
-        // Small delay to ensure the transition from 0% triggers
-        setTimeout(() => { if (loader) loader.style.width = '45%'; }, 10);
-    }
-
-    function hideLoading() {
-        const loader = document.getElementById('ffll-update-loader');
-        if (loader) {
-            loader.style.width = '100%';
-            setTimeout(() => {
-                loader.style.opacity = '0';
-            }, 400);
-        }
-    }
-
-    /**
      * Create and show update notification modal
      */
     function showUpdateNotification(latestVersion, downloadUrl) {
-        // Remove existing modal if any
         const existingModal = document.getElementById('ffll-update-modal');
         if (existingModal) {
             existingModal.remove();
         }
 
-        // Create modal overlay
         const modal = document.createElement('div');
         modal.id = 'ffll-update-modal';
         modal.style.cssText = `
@@ -93,7 +23,6 @@ const UpdateChecker = (() => {
             padding: 16px;
         `;
 
-        // Create modal content
         const content = document.createElement('div');
         content.style.cssText = `
             background: linear-gradient(135deg, rgba(46, 24, 70, 0.98), rgba(20, 10, 26, 0.98));
@@ -153,7 +82,6 @@ const UpdateChecker = (() => {
         `;
         subMessage.textContent = 'Update now to get the latest features and improvements.';
 
-        // Create button container
         const buttonContainer = document.createElement('div');
         buttonContainer.style.cssText = `
             display: flex;
@@ -161,7 +89,6 @@ const UpdateChecker = (() => {
             margin-top: 24px;
         `;
 
-        // Update button
         const updateBtn = document.createElement('a');
         updateBtn.href = downloadUrl;
         updateBtn.target = '_blank';
@@ -189,7 +116,6 @@ const UpdateChecker = (() => {
             updateBtn.style.boxShadow = 'none';
         };
 
-        // Later button
         const laterBtn = document.createElement('button');
         laterBtn.style.cssText = `
             flex: 1;
@@ -226,93 +152,3 @@ const UpdateChecker = (() => {
         modal.appendChild(content);
         document.body.appendChild(modal);
     }
-
-    /**
-     * Check for updates from GitHub
-     */
-    async function checkForUpdates() {
-        if (isChecking) return;
-        isChecking = true;
-        showLoading();
-        
-        try {
-            console.log('Checking for updates...');
-            const response = await fetch(GITHUB_API_URL, {
-                headers: {
-                    'Accept': 'application/vnd.github.v3+json',
-                    'User-Agent': 'FFLL-App'
-                }
-            });
-            
-            const loader = document.getElementById('ffll-update-loader');
-            if (loader) loader.style.width = '80%';
-
-            if (!response.ok) {
-                console.warn('Failed to check for updates');
-                return;
-            }
-
-            const data = await response.json();
-            const latestVersion = data.tag_name;
-
-            if (isNewerVersion(latestVersion, CURRENT_VERSION)) {
-                // Find the download URL
-                let downloadUrl = null;
-                
-                // First, try to find an APK for Android
-                if (data.assets && data.assets.length > 0) {
-                    const apkAsset = data.assets.find(asset => 
-                        asset.name.endsWith('.apk')
-                    );
-                    if (apkAsset) {
-                        downloadUrl = apkAsset.browser_download_url;
-                    }
-                }
-
-                // Fallback to releases page
-                if (!downloadUrl) {
-                    downloadUrl = data.html_url;
-                }
-
-                // Show the notification
-                showUpdateNotification(latestVersion, downloadUrl);
-            }
-        } catch (error) {
-            console.warn('Error checking for updates:', error);
-        } finally {
-            isChecking = false;
-            hideLoading();
-        }
-    }
-
-    /**
-     * Initialize update checker
-     */
-    function init() {
-        // Check for updates when app loads
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', checkForUpdates);
-        } else {
-            checkForUpdates();
-        }
-
-        // Check for updates when app resumes from background
-        document.addEventListener('resume', checkForUpdates);
-
-        // Optional: Check again periodically (every hour while app is open)
-        setInterval(checkForUpdates, 60 * 60 * 1000);
-    }
-
-    return {
-        init,
-        checkForUpdates,
-        // Expose for testing
-        isNewerVersion,
-        parseVersion
-    };
-})();
-
-// Initialize when script loads
-if (typeof window !== 'undefined') {
-    UpdateChecker.init();
-}

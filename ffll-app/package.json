@@ -12,7 +12,8 @@
     "build": "vite build && node sync-html.js",
     "preview": "vite preview",
     "sync": "node sync-html.js",
-    "watch": "node sync-html.js --watch"
+    "watch": "node sync-html.js --watch",
+    "build-mobile": "node sync-html.js && npx cap sync"
   },
   "dependencies": {
     "@capacitor/android": "^8.4.0",
@@ -32,5 +33,5 @@
     "esbuild@0.27.7": true,
     "fsevents@2.3.3": true,
     "sharp@0.32.6": true
-  }
+  } 
 }
