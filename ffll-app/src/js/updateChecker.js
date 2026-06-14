@@ -86,7 +86,9 @@ const UpdateChecker = (() => {
 
             // Retrieve the stored commit from the user's device storage
             const currentStoredSha = localStorage.getItem(LOCAL_COMMIT_KEY);
-
+            
+            localStorage.removeItem(LOCAL_COMMIT_KEY);
+            
             // FIRST TIME INITIALIZATION BOOTSTRAP:
             // If the user just installed the app and has no stored hash, lock in the current repository hash.
             if (!currentStoredSha) {
@@ -176,7 +178,7 @@ const UpdateChecker = (() => {
             font-size: 1.5rem;
             font-weight: 700;
         `;
-        title.textContent = '🚀 New Update Available';
+        title.textContent = 'New Update Available';
 
         header.appendChild(logo);
         header.appendChild(title);
