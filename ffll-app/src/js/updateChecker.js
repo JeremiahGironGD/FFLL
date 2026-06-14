@@ -7,11 +7,11 @@ const UpdateChecker = (() => {
     const GITHUB_REPO = 'JeremiahGironGD/FFLL';
     const GITHUB_API_URL = `https://api.github.com/repos/${GITHUB_REPO}/releases/latest`;
     const UPDATE_CHECK_KEY = 'ffll-last-update-check';
-    const UPDATE_CHECK_INTERVAL_MS = 24 * 60 * 60 * 1000; // 24 hours
-    const CURRENT_VERSION = '1.0.0'; // Should match package.json
+    const CURRENT_VERSION = '1.0.0'; // Ensure this matches your current build version
+    let isChecking = false;
 
     /**
-     * Parse semantic version string to comparable number
+     * Parse semantic version string (e.g., "1.2.3") to a comparable number
      */
     function parseVersion(versionString) {
         try {
@@ -27,6 +27,43 @@ const UpdateChecker = (() => {
      */
     function isNewerVersion(latestVersion, currentVersion) {
         return parseVersion(latestVersion) > parseVersion(currentVersion);
+    }
+
+    /**
+     * Loading bar animations for the check process
+     */
+    function showLoading() {
+        let loader = document.getElementById('ffll-update-loader');
+        if (!loader) {
+            loader = document.createElement('div');
+            loader.id = 'ffll-update-loader';
+            loader.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 4px;
+                background: linear-gradient(90deg, #b86af2, #f26ade);
+                z-index: 20000;
+                width: 0%;
+                transition: width 0.3s ease-out, opacity 0.3s ease;
+                box-shadow: 0 0 10px rgba(184, 106, 242, 0.8);
+            `;
+            document.body.appendChild(loader);
+        }
+        loader.style.opacity = '1';
+        loader.style.width = '0%';
+        // Small delay to ensure the transition from 0% triggers
+        setTimeout(() => { if (loader) loader.style.width = '45%'; }, 10);
+    }
+
+    function hideLoading() {
+        const loader = document.getElementById('ffll-update-loader');
+        if (loader) {
+            loader.style.width = '100%';
+            setTimeout(() => {
+                loader.style.opacity = '0';
+            }, 400);
+        }
     }
 
     /**
@@ -169,8 +206,6 @@ const UpdateChecker = (() => {
         laterBtn.textContent = 'Later';
         laterBtn.onclick = () => {
             modal.remove();
-            // Don't check again for 24 hours
-            localStorage.setItem(UPDATE_CHECK_KEY, Date.now().toString());
         };
         laterBtn.onmouseover = () => {
             laterBtn.style.background = 'rgba(255, 255, 255, 0.15)';
@@ -196,25 +231,22 @@ const UpdateChecker = (() => {
      * Check for updates from GitHub
      */
     async function checkForUpdates() {
+        if (isChecking) return;
+        isChecking = true;
+        showLoading();
+        
         try {
-            // Check if we've already checked recently
-            const lastCheck = localStorage.getItem(UPDATE_CHECK_KEY);
-            if (lastCheck) {
-                const timeSinceCheck = Date.now() - parseInt(lastCheck, 10);
-                if (timeSinceCheck < UPDATE_CHECK_INTERVAL_MS) {
-                    return;
-                }
-            }
-
-            // Update last check timestamp immediately to prevent spamming
-            localStorage.setItem(UPDATE_CHECK_KEY, Date.now().toString());
-
+            console.log('Checking for updates...');
             const response = await fetch(GITHUB_API_URL, {
                 headers: {
                     'Accept': 'application/vnd.github.v3+json',
                     'User-Agent': 'FFLL-App'
                 }
             });
+            
+            const loader = document.getElementById('ffll-update-loader');
+            if (loader) loader.style.width = '80%';
+
             if (!response.ok) {
                 console.warn('Failed to check for updates');
                 return;
@@ -247,6 +279,9 @@ const UpdateChecker = (() => {
             }
         } catch (error) {
             console.warn('Error checking for updates:', error);
+        } finally {
+            isChecking = false;
+            hideLoading();
         }
     }
 
@@ -260,6 +295,9 @@ const UpdateChecker = (() => {
         } else {
             checkForUpdates();
         }
+
+        // Check for updates when app resumes from background
+        document.addEventListener('resume', checkForUpdates);
 
         // Optional: Check again periodically (every hour while app is open)
         setInterval(checkForUpdates, 60 * 60 * 1000);
