@@ -381,4 +381,7 @@ if (typeof window !== 'undefined') {
     } else {
         window.UpdateChecker.init();
     }
+    // Inside sync-html.js
+const sourcePath = path.join(__dirname, 'dist', 'js', 'updateChecker.js'); // Read compiled production assets
+const targetPath = path.join(__dirname, 'www', 'js', 'updateChecker.js');  // Transfer to native bundle path
 }
