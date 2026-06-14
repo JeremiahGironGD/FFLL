@@ -1,2 +1,5 @@
 # Bye bye MacOS
 .DS_Store
+
+#Node Modules
+node_modules/
