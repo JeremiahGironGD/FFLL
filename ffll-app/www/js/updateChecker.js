@@ -1,48 +1,110 @@
 /**
  * Update Checker Module (Commits-Based)
- * Tracks the latest commit on the main branch and notifies the user of updates.
+ * Tracks the latest commit in the ffll-app folder and notifies the user of updates.
  */
 
 const UpdateChecker = (() => {
     const GITHUB_REPO = 'JeremiahGironGD/FFLL';
-    // Fetches the single latest commit from the main branch
-    const GITHUB_API_URL = `https://api.github.com/repos/${GITHUB_REPO}/commits?per_page=1&sha=main`;
+    const GITHUB_API_URL = `https://api.github.com/repos/${GITHUB_REPO}/commits?per_page=1&path=ffll-app`;
     const LOCAL_COMMIT_KEY = 'ffll-last-known-commit';
     let isChecking = false;
 
     /**
-     * Loading Bar Animation Logic
+     * Creates and displays the custom Purple & Black full-screen loading overlay
      */
     function showLoading() {
-        let loader = document.getElementById('ffll-update-loader');
-        if (!loader) {
-            loader = document.createElement('div');
-            loader.id = 'ffll-update-loader';
-            loader.style.cssText = `
+        let overlay = document.getElementById('ffll-update-loading-overlay');
+        if (!overlay) {
+            // Main dark transparent container
+            overlay = document.createElement('div');
+            overlay.id = 'ffll-update-loading-overlay';
+            overlay.style.cssText = `
                 position: fixed;
                 top: 0;
                 left: 0;
-                height: 4px;
-                background: linear-gradient(90deg, #b86af2, #f26ade);
+                width: 100vw;
+                height: 100vh;
+                background-color: rgba(15, 8, 20, 0.7);
+                backdrop-filter: blur(4px);
+                -webkit-backdrop-filter: blur(4px);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
                 z-index: 999999;
-                width: 0%;
-                transition: width 0.4s cubic-bezier(0.1, 0.7, 1.0, 0.1), opacity 0.3s ease;
-                box-shadow: 0 0 10px rgba(184, 106, 242, 0.8);
-                pointer-events: none;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             `;
-            document.body.appendChild(loader);
+
+            // Spinner Wrapper
+            const spinnerWrapper = document.createElement('div');
+            spinnerWrapper.style.cssText = `
+                position: relative;
+                width: 64px;
+                height: 64px;
+            `;
+
+            // The Spinner Ring
+            const spinner = document.createElement('div');
+            spinner.id = 'ffll-loading-spinner';
+            spinner.style.cssText = `
+                box-sizing: border-box;
+                width: 100%;
+                height: 100%;
+                border: 5px solid rgba(184, 106, 242, 0.15);
+                border-top: 5px solid #b86af2;
+                border-radius: 50%;
+            `;
+
+            // Inject CSS Keyframes directly into the document for the spin animation
+            if (!document.getElementById('ffll-spinner-styles')) {
+                const styleSheet = document.createElement('style');
+                styleSheet.id = 'ffll-spinner-styles';
+                styleSheet.textContent = `
+                    @keyframes ffllSpin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
+                    }
+                    #ffll-loading-spinner {
+                        animation: ffllSpin 0.8s linear infinite;
+                    }
+                `;
+                document.head.appendChild(styleSheet);
+            }
+
+            // "Loading..." Text
+            const loadingText = document.createElement('div');
+            loadingText.style.cssText = `
+                margin-top: 20px;
+                color: #eef3ff;
+                font-size: 1.1rem;
+                font-weight: 500;
+                letter-spacing: 0.5px;
+                text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+            `;
+            loadingText.textContent = 'Checking for updates...';
+
+            spinnerWrapper.appendChild(spinner);
+            overlay.appendChild(spinnerWrapper);
+            overlay.appendChild(loadingText);
+            document.body.appendChild(overlay);
         }
-        loader.style.opacity = '1';
-        loader.style.width = '0%';
-        setTimeout(() => { if (loader) loader.style.width = '45%'; }, 50);
+        
+        // Trigger reflow to ensure the fade-in animation runs smoothly
+        overlay.getBoundingClientRect();
+        overlay.style.opacity = '1';
     }
 
+    /**
+     * Smoothly fades out and destroys the loading overlay
+     */
     function hideLoading() {
-        const loader = document.getElementById('ffll-update-loader');
-        if (loader) {
-            loader.style.width = '100%';
+        const overlay = document.getElementById('ffll-update-loading-overlay');
+        if (overlay) {
+            overlay.style.opacity = '0';
             setTimeout(() => {
-                loader.style.opacity = '0';
+                overlay.remove();
             }, 300);
         }
     }
@@ -57,11 +119,11 @@ const UpdateChecker = (() => {
         if (document.body) showLoading();
 
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+        const timeoutId = setTimeout(() => controller.abort(), 10000); 
 
         try {
-            const minDelay = new Promise(resolve => setTimeout(resolve, 1000));
-            
+            const minDelay = new Promise(resolve => setTimeout(resolve, 1200));
+
             const response = await fetch(GITHUB_API_URL, {
                 method: 'GET',
                 cache: 'no-store',
@@ -70,43 +132,28 @@ const UpdateChecker = (() => {
             });
             clearTimeout(timeoutId);
 
-            const loader = document.getElementById('ffll-update-loader');
-            if (loader) loader.style.width = '85%';
-
             if (!response.ok) throw new Error('Network response was not ok');
 
             const commits = await response.json();
             if (!commits || commits.length === 0) throw new Error('No commits found');
 
-            // Get the unique identifier (SHA) and message of the latest commit
             const latestCommitSha = commits[0].sha;
             const commitMessage = commits[0].commit.message;
+            const lastKnownSha = localStorage.getItem(LOCAL_COMMIT_KEY);
 
             await minDelay;
 
-            // Retrieve the stored commit from the user's device storage
-            const currentStoredSha = localStorage.getItem(LOCAL_COMMIT_KEY);
-            
-            localStorage.removeItem(LOCAL_COMMIT_KEY);
-            
-            // FIRST TIME INITIALIZATION BOOTSTRAP:
-            // If the user just installed the app and has no stored hash, lock in the current repository hash.
-            if (!currentStoredSha) {
+            if (!lastKnownSha) {
                 localStorage.setItem(LOCAL_COMMIT_KEY, latestCommitSha);
-                console.log('UpdateChecker: First run, initialized local hash tracking.');
+                console.log('UpdateChecker: Initialized tracking with current commit.');
                 return;
             }
 
-            // If the GitHub commit hash doesn't match the local device storage hash, an update is ready!
-            if (latestCommitSha !== currentStoredSha) {
-                console.log('UpdateChecker: New commit detected on main branch.');
-                
-                // Direct the button directly to your main repository overview page
-                let downloadUrl = `https://github.com/${GITHUB_REPO}`;
-                
+            if (latestCommitSha !== lastKnownSha) {
+                const downloadUrl = `https://github.com/${GITHUB_REPO}/tree/main/ffll-app`;
                 showUpdateNotification(commitMessage, latestCommitSha, downloadUrl);
             } else {
-                console.log('UpdateChecker: App is fully synchronized with main branch.');
+                console.log('UpdateChecker: App is up to date.');
             }
         } catch (error) {
             console.warn('Update check failed:', error);
@@ -178,7 +225,7 @@ const UpdateChecker = (() => {
             font-size: 1.5rem;
             font-weight: 700;
         `;
-        title.textContent = 'New Update Available';
+        title.textContent = '🚀 New Update Available';
 
         header.appendChild(logo);
         header.appendChild(title);
@@ -190,8 +237,7 @@ const UpdateChecker = (() => {
             font-size: 0.95rem;
             line-height: 1.6;
         `;
-        // Displays your actual Git commit description text inside the modal window!
-        message.textContent = `Change Log: "${commitMessage}"`;
+        message.textContent = `Update Found: "${commitMessage}"`;
 
         const subMessage = document.createElement('p');
         subMessage.style.cssText = `
@@ -199,7 +245,7 @@ const UpdateChecker = (() => {
             color: #c3cad9;
             font-size: 0.85rem;
         `;
-        subMessage.textContent = 'A new build has been pushed to the repository. Update now to sync changes.';
+        subMessage.textContent = 'A new build is available in the repository. Tap below to see the latest files.';
 
         const buttonContainer = document.createElement('div');
         buttonContainer.style.cssText = `
@@ -208,9 +254,7 @@ const UpdateChecker = (() => {
             margin-top: 24px;
         `;
 
-        const updateBtn = document.createElement('a');
-        updateBtn.href = downloadUrl;
-        updateBtn.target = '_blank';
+        const updateBtn = document.createElement('button');
         updateBtn.style.cssText = `
             flex: 1;
             padding: 12px 16px;
@@ -222,14 +266,27 @@ const UpdateChecker = (() => {
             font-size: 0.9rem;
             cursor: pointer;
             text-align: center;
-            text-decoration: none;
             transition: transform 180ms, box-shadow 180ms;
         `;
         updateBtn.textContent = 'Get Update';
         
-        // When clicked, save the new SHA so the popup doesn't reappear until the NEXT push
-        updateBtn.onclick = () => {
+        updateBtn.onclick = async () => {
             localStorage.setItem(LOCAL_COMMIT_KEY, nextSha);
+            
+            // Native Browser View Integration using Capacitor Plugins
+            if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Browser) {
+                try {
+                    await window.Capacitor.Plugins.Browser.open({ 
+                        url: downloadUrl,
+                        presentationStyle: 'fullscreen'
+                    });
+                } catch (err) {
+                    console.error('Capacitor Browser error, falling back:', err);
+                    window.open(downloadUrl, '_blank');
+                }
+            } else {
+                window.open(downloadUrl, '_blank');
+            }
             modal.remove();
         };
         
