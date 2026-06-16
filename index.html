@@ -97,7 +97,7 @@
             display: inline-flex;
             flex-direction: column;
             align-items: center;
-            gap: 4px;
+            gap: 3px;
             text-decoration: none;
             color: var(--text);
             text-align: center;
@@ -259,7 +259,7 @@
             background: linear-gradient(135deg, #171717 0%, #312b3d 100%);
         }
     </style>
-    <script src="js/updateChecker.js"></script>
+    <script src="js/updateChecker.js"></script> <!-- For the app, ignore this for the website -->
 </head>
 <body>
     <main>
@@ -283,6 +283,14 @@
                 <a class="nav-item" href="moreinfo.html">
                     <span class="nav-item-label" data-i18n="infoLabel">Info</span>
                     <span class="nav-item-title" data-i18n="infoTitle">More Info (WIP)</span>
+                </a>
+                <a class="nav-item" href="https://github.com/JeremiahGironGD/issues">
+                    <span class="nav-item-label" data-i18n="githubLabel">Issues</span>
+                    <span class="nav-item-title" data-i18n="githubTitle">Report a Bug</span>
+                </a>
+                <a class="nav-item" href="https://github.com/JeremiahGironGD/FFLL/releases">
+                    <span class="nav-item-label" data-i18n="releasesLabel">Download</span>
+                    <span class="nav-item-title" data-i18n="releasesTitle">Download the App(Mobile)</span>
                 </a>
             </nav>
             <button type="button" id="locale-switch" class="locale-switch" aria-label="Toggle language">
@@ -366,7 +374,11 @@
                 infoTitle: 'More Info (WIP)',
                 pageTitle: 'Family and Friends Challenge List',
                 subtitle: 'Level placements are decided by JeremiahGironGD (Idekan)',
-                levelsText: 'Levels:'
+                levelsText: 'Levels:',
+                githubLabel: 'Issues',
+                githubTitle: 'Report a Bug',
+                releasesLabel: 'Download',
+                releasesTitle: 'Download the App(Mobile)'
             },
             es: {
                 localeFlag: '🇪🇸',
@@ -382,7 +394,11 @@
                 infoTitle: 'Más Información (WIP)',
                 pageTitle: 'Lista de Desafíos Familia y Amigos',
                 subtitle: 'Las posiciones de nivel las decide JeremiahGironGD (Idekan)',
-                levelsText: 'Niveles:'
+                levelsText: 'Niveles:',
+                githubLabel: 'Asuntos',
+                githubTitle: 'Informar de un error',
+                releasesLabel: 'Descargar',
+                releasesTitle: 'Descargar la App(Móvil)'
             }
         };
 
