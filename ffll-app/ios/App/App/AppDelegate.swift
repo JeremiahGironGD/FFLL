@@ -1,3 +1,4 @@
+#if canImport(UIKit)
 import UIKit
 import Capacitor
 
@@ -41,3 +42,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return ApplicationDelegateProxy.shared.application(application, continue: userActivity, restorationHandler: restorationHandler)
     }
 }
+#else
+import Foundation
+
+// Fallback stub for non-iOS environments (prevents analyzer errors where UIKit isn't available)
+class AppDelegate {}
+#endif

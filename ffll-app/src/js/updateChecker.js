@@ -5,12 +5,21 @@
 
 const UpdateChecker = (() => {
     const GITHUB_REPO = 'JeremiahGironGD/FFLL';
-    const GITHUB_API_URL = `https://api.github.com/repos/${GITHUB_REPO}/commits?per_page=1&path=ffll-app`;
+    const GITHUB_COMMITS_API = `https://api.github.com/repos/${GITHUB_REPO}/commits?per_page=1&path=ffll-app`;
+    const GITHUB_RELEASES_API = `https://api.github.com/repos/${GITHUB_REPO}/releases/latest`;
+    const GITHUB_CONTENTS_API = `https://api.github.com/repos/${GITHUB_REPO}/contents`;
     const LOCAL_COMMIT_KEY = 'ffll-last-known-commit';
+    const LOCAL_RELEASE_KEY = 'ffll-last-known-release';
+    const APP_UPDATE_SCOPE = !!(
+        window.ffllAppPage ||
+        window.location.pathname.includes('/ffll-app/') ||
+        window.location.pathname.includes('/www/') ||
+        typeof window.Capacitor !== 'undefined'
+    );
     let isChecking = false;
 
     /**
-     * Creates and displays the custom Purple & Black full-screen loading overlay
+     * Load the checking for updates module
      */
     function showLoading() {
         let overlay = document.getElementById('ffll-update-loading-overlay');
@@ -124,7 +133,7 @@ const UpdateChecker = (() => {
         try {
             const minDelay = new Promise(resolve => setTimeout(resolve, 1200));
 
-            const response = await fetch(GITHUB_API_URL, {
+            const response = await fetch(GITHUB_COMMITS_API, {
                 method: 'GET',
                 cache: 'no-store',
                 headers: { 'Accept': 'application/vnd.github.v3+json' },
@@ -140,18 +149,32 @@ const UpdateChecker = (() => {
             const latestCommitSha = commits[0].sha;
             const commitMessage = commits[0].commit.message;
             const lastKnownSha = localStorage.getItem(LOCAL_COMMIT_KEY);
+            // Also check latest release to see if app needs updating
+            let latestRelease;
+            try {
+                const relResp = await fetch(GITHUB_RELEASES_API, { method: 'GET', cache: 'no-store', headers: { 'Accept': 'application/vnd.github.v3+json' } });
+                if (relResp && relResp.ok) latestRelease = await relResp.json();
+            } catch (e) {
+                console.warn('Release check failed', e);
+            }
+            const lastKnownRelease = localStorage.getItem(LOCAL_RELEASE_KEY);
 
             await minDelay;
 
             if (!lastKnownSha) {
                 localStorage.setItem(LOCAL_COMMIT_KEY, latestCommitSha);
-                console.log('UpdateChecker: Initialized tracking with current commit.');
+                if (latestRelease && latestRelease.tag_name) localStorage.setItem(LOCAL_RELEASE_KEY, latestRelease.tag_name);
+                console.log('UpdateChecker: Initialized tracking with current commit and release.');
                 return;
             }
 
+            // If commit changed, show commit-based update notification
             if (latestCommitSha !== lastKnownSha) {
                 const downloadUrl = `https://github.com/${GITHUB_REPO}/tree/main/ffll-app`;
-                showUpdateNotification(commitMessage, latestCommitSha, downloadUrl);
+                showUpdateNotification({ type: 'commit', message: commitMessage, nextSha: latestCommitSha, downloadUrl });
+            } else if (latestRelease && latestRelease.tag_name && latestRelease.tag_name !== lastKnownRelease) {
+                // Release tag changed — likely a packaged release (possibly app loader/www changed)
+                showUpdateNotification({ type: 'release', message: latestRelease.name || latestRelease.tag_name, nextRelease: latestRelease.tag_name, release: latestRelease });
             } else {
                 console.log('UpdateChecker: App is up to date.');
             }
@@ -165,8 +188,10 @@ const UpdateChecker = (() => {
 
     /**
      * Create and show update notification modal
+     * Accepts an info object: { type: 'commit'|'release', message, nextSha, downloadUrl, release }
      */
-    function showUpdateNotification(commitMessage, nextSha, downloadUrl) {
+    function showUpdateNotification(info) {
+        const { type = 'commit', message, nextSha, downloadUrl, release } = info || {};
         const existingModal = document.getElementById('ffll-update-modal');
         if (existingModal) {
             existingModal.remove();
@@ -237,7 +262,7 @@ const UpdateChecker = (() => {
             font-size: 0.95rem;
             line-height: 1.6;
         `;
-        message.textContent = `Update Found: "${commitMessage}"`;
+        message.textContent = `Update Found: "${message}"`;
 
         const subMessage = document.createElement('p');
         subMessage.style.cssText = `
@@ -245,7 +270,9 @@ const UpdateChecker = (() => {
             color: #c3cad9;
             font-size: 0.85rem;
         `;
-        subMessage.textContent = 'A new build is available in the repository. Tap below to see the latest files.';
+        subMessage.textContent = type === 'release'
+            ? 'A native release update is available. Open releases to download the new app loader.'
+            : 'A new build is available in the repository. Tap below to fetch the latest files.';
 
         const buttonContainer = document.createElement('div');
         buttonContainer.style.cssText = `
@@ -268,26 +295,55 @@ const UpdateChecker = (() => {
             text-align: center;
             transition: transform 180ms, box-shadow 180ms;
         `;
-        updateBtn.textContent = 'Get Update';
-        
+        updateBtn.textContent = type === 'release' ? 'Open Releases' : 'Get Update';
+
         updateBtn.onclick = async () => {
-            localStorage.setItem(LOCAL_COMMIT_KEY, nextSha);
-            
-            // Native Browser View Integration using Capacitor Plugins
-            if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Browser) {
-                try {
-                    await window.Capacitor.Plugins.Browser.open({ 
-                        url: downloadUrl,
-                        presentationStyle: 'fullscreen'
-                    });
-                } catch (err) {
-                    console.error('Capacitor Browser error, falling back:', err);
-                    window.open(downloadUrl, '_blank');
+            if (type === 'release' && release && release.html_url) {
+                if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Browser) {
+                    try {
+                        await window.Capacitor.Plugins.Browser.open({ url: release.html_url });
+                    } catch (e) {
+                        window.open(release.html_url, '_blank');
+                    }
+                } else {
+                    window.open(release.html_url, '_blank');
                 }
-            } else {
-                window.open(downloadUrl, '_blank');
+                modal.remove();
+                return;
             }
-            modal.remove();
+
+            modal.querySelector('[data-updating]')?.remove?.();
+            const updating = document.createElement('div');
+            updating.setAttribute('data-updating', '1');
+            updating.style.cssText = 'margin-top:12px;color:#cbd5e1;font-size:0.85rem;';
+            updating.textContent = 'Downloading and applying update...';
+            content.appendChild(updating);
+            try {
+                if (type === 'commit' && nextSha) localStorage.setItem(LOCAL_COMMIT_KEY, nextSha);
+                await applyWwwUpdate();
+                updating.textContent = 'Update applied — restarting app...';
+                setTimeout(() => window.location.reload(), 900);
+            } catch (err) {
+                console.error('Apply update failed', err);
+                updating.textContent = 'Failed to apply update. You can open the releases page to download manually.';
+                if (release && release.html_url) {
+                    const openBtn = document.createElement('button');
+                    openBtn.style.cssText = `margin-top:10px;padding:8px 12px;background:transparent;border:1px solid rgba(255,255,255,0.08);color:#eef3ff;border-radius:8px;cursor:pointer;`;
+                    openBtn.textContent = 'Open Releases';
+                    openBtn.onclick = async () => {
+                        if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Browser) {
+                            try {
+                                await window.Capacitor.Plugins.Browser.open({ url: release.html_url });
+                            } catch (e) {
+                                window.open(release.html_url, '_blank');
+                            }
+                        } else {
+                            window.open(release.html_url, '_blank');
+                        }
+                    };
+                    content.appendChild(openBtn);
+                }
+            }
         };
         
         updateBtn.onmouseover = () => {
@@ -336,6 +392,75 @@ const UpdateChecker = (() => {
         document.body.appendChild(modal);
     }
 
+    /* Helper: recursively list files under a repository path using GitHub Contents API */
+    async function fetchRepoContentsRecursive(path) {
+        const url = `${GITHUB_CONTENTS_API}/${path}`;
+        const res = await fetch(url, { cache: 'no-store', headers: { 'Accept': 'application/vnd.github.v3+json' } });
+        if (!res.ok) throw new Error('Failed to list repo contents: ' + res.status);
+        const items = await res.json();
+        let files = [];
+        for (const item of items) {
+            if (item.type === 'file') {
+                files.push({ path: item.path, download_url: item.download_url });
+            } else if (item.type === 'dir') {
+                const child = await fetchRepoContentsRecursive(item.path);
+                files = files.concat(child);
+            }
+        }
+        return files;
+    }
+
+    /* Helper: convert Blob to base64 string for Capacitor Filesystem */
+    function blobToBase64(blob) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const dataUrl = reader.result;
+                const base64 = dataUrl.split(',')[1];
+                resolve(base64);
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+    }
+
+    /* Helper: download list of files and write them to Capacitor Filesystem or Cache Storage */
+    async function downloadAndSaveFiles(files) {
+        const hasCapacitorFs = !!(window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Filesystem);
+        if (hasCapacitorFs) {
+            const FS = window.Capacitor.Plugins.Filesystem;
+            for (const f of files) {
+                const resp = await fetch(f.download_url, { cache: 'no-store' });
+                if (!resp.ok) throw new Error('Failed to download ' + f.download_url);
+                const blob = await resp.blob();
+                const base64 = await blobToBase64(blob);
+                const relative = f.path.replace(/^ffll-app\/www\//, '');
+                try {
+                    await FS.writeFile({ path: `www/${relative}`, data: base64, directory: 'DATA' });
+                } catch (e) {
+                    console.warn('Filesystem write failed for', relative, e);
+                }
+            }
+        } else if ('caches' in window) {
+            const cache = await caches.open('ffll-www-updates');
+            for (const f of files) {
+                const resp = await fetch(f.download_url, { cache: 'no-store' });
+                if (!resp.ok) throw new Error('Failed to download ' + f.download_url);
+                const relative = '/' + f.path.replace(/^ffll-app\/www\//, '');
+                await cache.put(relative, resp.clone());
+            }
+        } else {
+            throw new Error('No supported storage available to save update files');
+        }
+    }
+
+    /* Main apply routine: fetch ffll-app/www and save */
+    async function applyWwwUpdate() {
+        const files = await fetchRepoContentsRecursive('ffll-app/www');
+        if (!files || files.length === 0) throw new Error('No www files found in repository');
+        await downloadAndSaveFiles(files);
+    }
+
     /**
      * Initialize Listeners safely
      */
@@ -376,12 +501,11 @@ const UpdateChecker = (() => {
 if (typeof window !== 'undefined') {
     window.UpdateChecker = UpdateChecker;
 
-    if (document.readyState === 'loading') {
-        window.addEventListener('DOMContentLoaded', () => window.UpdateChecker.init());
-    } else {
-        window.UpdateChecker.init();
+    if (APP_UPDATE_SCOPE) {
+        if (document.readyState === 'loading') {
+            window.addEventListener('DOMContentLoaded', () => window.UpdateChecker.init());
+        } else {
+            window.UpdateChecker.init();
+        }
     }
-    // Inside sync-html.js
-const sourcePath = path.join(__dirname, 'dist', 'js', 'updateChecker.js'); // Read compiled production assets
-const targetPath = path.join(__dirname, 'www', 'js', 'updateChecker.js');  // Transfer to native bundle path
 }
