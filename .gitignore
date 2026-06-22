@@ -3,3 +3,9 @@
 
 #Node Modules
 node_modules/
+
+# VS Code Settings
+.vscode/
+
+# VS Code Workspace
+FFIL.code-workspace
