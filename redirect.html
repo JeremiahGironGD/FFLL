@@ -120,6 +120,15 @@
       window.location.href = "https://his-secret-ffll.pages.dev";
       return;
     }
+    if (secretAnswer === '3d') {
+      e.preventDefault();
+      alert('Why yes, 3 days remaining...');
+      alert('What will happen?');
+      alert('You will have to figure that out yourself...');
+      alert('Leave now...');
+      window.location.href = "index.html";
+      return;
+    }
 
     e.preventDefault();
     if (normalizedAnswer === 'no' || normalizedAnswer === 'n') {
