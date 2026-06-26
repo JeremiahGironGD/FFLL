@@ -5,14 +5,24 @@
         <title>FFLL - 404 Not Found</title>
         <link rel="icon" type="image/x-icon" href="Favicon.ico">
         <style>
+            html, body {
+                width: 100%;
+                min-height: 100%;
+                height: 100%;
+                background-color: #4c0c57;
+                overscroll-behavior-y: none;
+            }
+            html {
+                background: transparent;
+            }
             body {
+                background: radial-gradient(circle at top right, rgba(0, 0, 0, 0.16), transparent 28%),
+                radial-gradient(circle at bottom left, rgba(184, 10, 10, 0.501), transparent 24%),
+                linear-gradient(180deg, #000000 0%, #100511 100%);
+                background-attachment: fixed;
                 margin: 0;
                 min-height: 100vh;
                 font-family: Inter, system-ui, sans-serif;
-                background: radial-gradient(circle at top right, rgba(0, 0, 0, 0.16), transparent 28%),
-                    radial-gradient(circle at bottom left, rgba(184, 10, 10, 0.501), transparent 24%),
-                    linear-gradient(180deg, #000000 0%, #100511 100%);
-                background-attachment: fixed;
                 color: var(--text);
                 display: flex;
                 justify-content: center;
