@@ -29,6 +29,7 @@
         radial-gradient(circle at bottom left, rgba(138, 10, 184, 0.162), transparent 24%),
         linear-gradient(180deg, #310303 0%, #050e265f 100%);
         background-attachment: fixed;
+            animation: pulse 12s ease-in-out infinite;
         margin: 0;
         min-height: 100vh;
         font-family: Inter, system-ui, sans-serif;
@@ -64,7 +65,26 @@
         box-shadow: 0 18px 40px rgba(0, 0, 0, 0.22);
     }
     .info-card h2, .video-card h2 { margin: 0 0 16px; color: #fff; }
-    .info-row { display: grid; gap: 12px; }</style>
+    .info-row { display: grid; gap: 12px; }
+
+        @keyframes pulse {
+            0% {
+                background-color: #120613;
+            }
+            25% {
+                background-color: #150d3072;
+            }
+            50% {
+                background-color: #120613;
+            }
+            75% {
+                background-color: #150d3072;
+            }
+            100% {
+                background-color: #120613;
+            }
+        }
+</style>
 </head>
 <body>
 <main>

@@ -36,6 +36,7 @@ body {
     radial-gradient(circle at bottom left, rgba(255, 94, 202, 0.12), transparent 24%),
     linear-gradient(180deg, #120613 0%, #100511 100%);
     background-attachment: fixed;
+            animation: pulse 12s ease-in-out infinite;
             margin: 0;
             min-height: 100vh;
             font-family: Inter, system-ui, sans-serif;
@@ -201,7 +202,26 @@ body {
         .level-card.dark {
             background: linear-gradient(135deg, #171717 0%, #312b3d 100%);
         }
-    </style>
+    
+
+        @keyframes pulse {
+            0% {
+                background-color: #120613;
+            }
+            25% {
+                background-color: #150d3072;
+            }
+            50% {
+                background-color: #120613;
+            }
+            75% {
+                background-color: #150d3072;
+            }
+            100% {
+                background-color: #120613;
+            }
+        }
+</style>
 </head>
 <body>
     <main>

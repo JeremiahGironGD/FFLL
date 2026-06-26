@@ -14,15 +14,25 @@
         --accent: #b86af2;
     }
     * { box-sizing: border-box; }
+    html, body {
+        width: 100%;
+        min-height: 100%;
+        height: 100%;
+        background-color: #4c0c57;
+        overscroll-behavior-y: none;
+    }
+    html {
+        background: transparent;
+    }
     body {
+        background: radial-gradient(circle at top right, rgba(92, 3, 48, 0.666), transparent 28%),
+        radial-gradient(circle at bottom left, rgba(138, 10, 184, 0.162), transparent 24%),
+        linear-gradient(180deg, #310303 0%, #050e265f 100%);
+        background-attachment: fixed;
+            animation: pulse 12s ease-in-out infinite;
         margin: 0;
         min-height: 100vh;
-        
         font-family: Inter, system-ui, sans-serif;
-        background: radial-gradient(circle at top right, rgba(0, 0, 0, 0.16), transparent 28%),
-                    radial-gradient(circle at bottom left, rgba(184, 10, 10, 0.501), transparent 24%),
-                    linear-gradient(180deg, #000000 0%, #100511 100%);
-        background-attachment: fixed;
         color: var(--text);
         display: flex;
         justify-content: center;
@@ -45,12 +55,10 @@
         width: 10px;
         height: 10px;
         border-radius: 999px;
-        background: currentColor;
         opacity: 0.4;
     }
     .card-list { display: grid; gap: 20px; }
     .info-card, .video-card {
-        background: linear-gradient(135deg, rgba(135, 6, 6, 0.92), rgba(20, 10, 26, 0.96));
         border: 1px solid var(--border);
         border-radius: 24px;
         padding: 24px;
@@ -58,6 +66,24 @@
     }
     .info-card h2, .video-card h2 { margin: 0 0 16px; color: #fff; }
     .info-row { display: grid; gap: 12px; }
+
+        @keyframes pulse {
+            0% {
+                background-color: #120613;
+            }
+            25% {
+                background-color: #150d3072;
+            }
+            50% {
+                background-color: #120613;
+            }
+            75% {
+                background-color: #150d3072;
+            }
+            100% {
+                background-color: #120613;
+            }
+        }
 </style>
 </head>
 <body>
@@ -118,6 +144,15 @@
       alert('...')
       alert('Time to go to a special hell')
       window.location.href = "https://his-secret-ffll.pages.dev";
+      return;
+    }
+    if (secretAnswer === '3d') {
+      e.preventDefault();
+      alert('Why yes, 3 days remaining...');
+      alert('What will happen?');
+      alert('You will have to figure that out yourself...');
+      alert('Leave now...');
+      window.location.href = "index.html";
       return;
     }
 

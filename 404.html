@@ -19,6 +19,7 @@
                 background: radial-gradient(circle at top right, rgba(94, 6, 195, 0), transparent 28%),
                 linear-gradient(75deg, #000000 30%, #ff0000 100%);
                 background-attachment: fixed;
+            animation: pulse 12s ease-in-out infinite;
                 margin: 0;
                 min-height: 100vh;
                 font-family: Inter, system-ui, sans-serif;
@@ -65,7 +66,26 @@
             a:hover {
                 text-decoration: underline;
             }
-        </style>
+        
+
+        @keyframes pulse {
+            0% {
+                background-color: #120613;
+            }
+            25% {
+                background-color: #150d3072;
+            }
+            50% {
+                background-color: #120613;
+            }
+            75% {
+                background-color: #150d3072;
+            }
+            100% {
+                background-color: #120613;
+            }
+        }
+</style>
     </head>
     <body>
     <main>
