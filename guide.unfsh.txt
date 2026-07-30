@@ -23,7 +23,7 @@ but you're not done yet, you have to go into the page and change the ID, Verifer
 
 Video,
 In a page you will see an <iframe> these iframe are the YouTube video of the showcase or verification, to edit one and change it to the correct video you will find the src and change it to the 
-youtube.com link, it cannot be a youtu.be link it has to be a youtube.com link
+youtube.com link, it cannot be a youtu.be link it has to be a youtube.com link more specifically a youtube link FOR an iframe
 
 Leaderboard,
 The Leaderboard can be found in points.html, in there you will look for a script there you will find the const in the const you will see a { or a bracket in that bracket you will see

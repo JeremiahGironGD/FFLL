@@ -5,6 +5,7 @@
     <title>FFLL</title>
     <link rel="icon" type="image/x-icon" href="Favicon.ico">
     <style>
+    /* Website styling!! Controls how the website looks */
         :root {
             color-scheme: dark;
             --bg: #110917;
@@ -31,7 +32,8 @@
         html {
             background: transparent;
         }
-
+        
+        /* The body, controls the background and the animation */
         body {
             background: radial-gradient(circle at top right, rgba(192, 145, 255, 0.16), transparent 28%),
                         radial-gradient(circle at bottom left, rgba(255, 94, 202, 0.12), transparent 24%);
@@ -136,7 +138,7 @@
             white-space: nowrap;
         }
 
-        .nav-item-title.demonlist::after {
+        .nav-item-title.list::after {
             content: '▼';
             margin-left: 6px;
             font-size: 0.7rem;
@@ -310,9 +312,12 @@
             }
         }
     </style>
-    <script>window.ffllAppPage = true;</script> <script src="js/updateChecker.js"></script>
+    <!-- For the Mobile App, does nothing on main page -->
+    <script>window.ffllAppPage = true;</script> 
+     <script src="js/updateChecker.js"></script>
     </head>
     <body>
+        <!-- Website Contents(Uses CSS code from the Head) -->
         <main>
             <h1 data-i18n="pageTitle">Family and Friends Challenge List</h1>
             <h4 data-i18n="subtitle">Level placements are decided by JeremiahGironGD (Idekan)</h4>
