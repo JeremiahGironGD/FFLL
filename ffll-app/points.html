@@ -260,7 +260,9 @@
             </div>
         </section>
     </main>
-    <script>
+    <script type="module">
+        import { levels } from "../../assets/levels.js";
+
         const FFLL_LOCALE_KEY = 'ffll-locale';
         const pageTranslations = {
             en: {
@@ -310,19 +312,16 @@
             }
         ];
 
-        const levelPoints = {
-            'back on track full': 12,
-            'idrinkbatteryacid': 11,
-            'thatonepurplelevel': 10,
-            'forever & ever preview': 9,
-            'wave 17 remake': 8,
-            'jace circles': 7,
-            'jace challenge': 6,
-            'sonic blaster': 5
-        };
+        // Auto-generate levelPoints from levels.js
+        const levelPoints = levels.reduce((acc, level) => {
+            const key = level.title.toLowerCase().replace(/\s*\|\s*currently broken$/, '');
+            acc[key] = level.points;
+            return acc;
+        }, {});
 
         function getLevelPoints(levelName) {
-            return levelPoints[levelName.trim().toLowerCase()] || 0;
+            const normalized = levelName.trim().toLowerCase().replace(/\s*\|\s*currently broken$/, '');
+            return levelPoints[normalized] || 0;
         }
 
         function getHardestBeatenLevel(beaten) {

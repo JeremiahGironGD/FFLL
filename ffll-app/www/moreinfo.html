@@ -1,149 +1,25 @@
-<html lang="eng">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>FFLL - More Info</title>
-        <link rel="icon" type="image/x-icon" href="Favicon.ico">
-        <style>      
-        :root {
-            color-scheme: dark;
-            --bg: #110917;
-            --surface: rgba(28, 16, 35, 0.94);
-            --border: rgba(255, 255, 255, 0.12);
-            --text: #eef3ff;
-            --muted: #c3cad9;
-            --accent: #b86af2;
-        }
-        * { box-sizing: border-box; }
-        html, body {
-            width: 100%;
-            min-height: 100%;
-            height: 100%;
-            background-color: #4c0c57;
-            overscroll-behavior-y: none;
-        }
-html {
-    background: transparent;
-}
-body {
-    background: radial-gradient(circle at top right, rgba(192, 145, 255, 0.16), transparent 28%),
-    radial-gradient(circle at bottom left, rgba(255, 94, 202, 0.12), transparent 24%),
-    linear-gradient(180deg, #120613 0%, #100511 100%);
-    background-attachment: fixed;
-            animation: pulse 12s ease-in-out infinite;
-            margin: 0;
-            min-height: 100vh;
-            font-family: Inter, system-ui, sans-serif;
-            color: var(--text);
-            display: flex;
-            justify-content: center;
-            padding: 32px 16px;
-}
-        main { width: min(760px, 100%); }
-        .page-title { margin: 0 0 10px; font-size: clamp(2rem, 3vw, 2.4rem); }
-        .subtitle { margin: 0 0 24px; color: var(--muted); }
-        .back-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 24px;
-            color: var(--accent);
-            text-decoration: none;
-            font-weight: 600;
-        }
-        .back-link::before {
-            content: "";
-            width: 10px;
-            height: 10px;
-            border-radius: 999px;
-            background: currentColor;
-            opacity: 0.4;
-        }
-        .card-list { display: grid; gap: 20px; }
-        .info-card, .video-card {
-            background: linear-gradient(135deg, rgba(46, 24, 70, 0.92), rgba(20, 10, 26, 0.96));
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 24px;
-            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.22);
-        }
-        .info-card h2, .video-card h2 { margin: 0 0 16px; color: #fff; }
-        .info-row { display: grid; gap: 12px; }
-        .info-item { display: flex; justify-content: space-between; gap: 12px; padding: 14px 16px; border-radius: 18px; background: rgba(255, 255, 255, 0.04); }
-        .info-item span { color: var(--muted); }
-        .info-item strong { color: #fff; }
-        .video-wrap { width: 100%; aspect-ratio: 16 / 9; background: #08040b; border-radius: 22px; overflow: hidden; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05); }
-        .video-wrap iframe { width: 100%; height: 100%; border: 0; }
-        .video-note { margin: 14px 0 0; color: var(--muted); font-size: 0.98rem; }
-    
-
-        @keyframes pulse {
-            0% {
-                background-color: #120613;
-            }
-            25% {
-                background-color: #150d3072;
-            }
-            50% {
-                background-color: #120613;
-            }
-            75% {
-                background-color: #150d3072;
-            }
-            100% {
-                background-color: #120613;
-            }
-        }
-</style>
+<html lang="en">
+<head>
+    <mtea charset="UTC4">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FFLL - More Info</title>
+    <link rel="icon" type="image/x-icon" href="Favicon.ico">
+    <link rel="stylesheet" href="assets/stylemix.css">
+    <script>window.ffllAppPage = true;</script>
     </head>
-    <body>
-        <p>
-        </p>
-        <main>
-            <h1 class="page-title" data-i18n="pageTitle">More Info</h1>
-            <p class="subtitle" data-i18n="subtitle">Additional details about the Family and Friends Challenge List</p>
-            <a class="back-link" href="index.html" data-i18n="backLink">
-                ← Back to Levels
-            </a>
-            <div class="card-list">
-                <div class="info-card">
-                    <h2>About the List</h2>
-                    <ul>
-                        <p>This list is a compilation of levels created by friends and family for the game Geometry Dash. It serves as a fun way to share and play each other's creations, with a points system to add some competition.</p>
-                        <p>This list is still a work in progress and is not completed yet</p>
-                        <p>The entry buttons are going to be changed</p>
-                    </ul>
-                </div>
+<body>
+    <h1>Family and Friends Levels List(FFLL)</h1>
+    <h3>The challenge list for all my friends & Family!</h3>
+    <h4>In Progress!</h4>
+    <a class="back-link" href="index.html">← Back to levels</a>
+    <main>
+        <section class="info-card">
+            <div class="info-row">
+                <h2 class="info-item">The FFLL Team</h2>
+                <div class="info-item">The FFLL team constists of only me and my friend I usually do most of the coding tho -Idekan</div>
             </div>
-        </main>
-    <script>
-        const FFLL_LOCALE_KEY = 'ffll-locale';
-        const pageTranslations = {
-            en: {
-                pageTitle: 'More Info',
-                subtitle: 'Additional details about the Family and Friends Challenge List',
-                backLink: '← Back to Levels'
-            },
-            es: {
-                pageTitle: 'Más Información',
-                subtitle: 'Detalles adicionales sobre la Lista de Desafíos Familia y Amigos',
-                backLink: '← Volver a Niveles'
-            }
-        };
-
-        function getSavedLocale() {
-            return localStorage.getItem(FFLL_LOCALE_KEY) || 'en';
-        }
-
-        function updateLocaleElements(locale) {
-            const map = pageTranslations[locale] || pageTranslations.en;
-            document.documentElement.lang = locale === 'es' ? 'es' : 'en';
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                el.textContent = map[el.dataset.i18n] || el.textContent;
-            });
-        }
-
-        updateLocaleElements(getSavedLocale());
-    </script>
+        </section>
+    </main>
     </body>
 </html>
