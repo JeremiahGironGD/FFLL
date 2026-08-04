@@ -1,7 +1,7 @@
 # Bye bye MacOS
 .DS_Store
 
-#Node Modules
+# Node Modules
 node_modules/
 
 # VS Code Settings
@@ -12,3 +12,6 @@ FFLL.code-workspace
 
 # LATER
 thetime.html
+
+# backups, will stay on my computer.. their only mine :3
+assets/backups/
