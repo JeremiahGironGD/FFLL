@@ -20,19 +20,22 @@ import { levels } from "./levels.js";
             name: 'Idekan',
             points: 355,
             beaten: 'ThatOnePurpleLevel, Forever & Ever Preview, Jace Challenge, Sonic Blaster, Back On Track Full',
-            created: 'Forever & Ever Preview, Back On Track Full, Jace Challenge'
+            created: 'Forever & Ever Preview, Back On Track Full, Jace Challenge',
+            pronouns: 'they/them'
         },
         {
             name: 'no2one2noneSs',
             points: 185,
             beaten: 'ThatOnePurpleLevel, Wave 17 Remake, Jace Circles',
-            created: 'ThatOnePurpleLevel, Wave 17 Remake, Jace Circles'
+            created: 'ThatOnePurpleLevel, Wave 17 Remake, Jace Circles',
+            pronouns: 'any'
         },
         {
             name: 'Angel',
             points: 100,
             beaten: 'Sonic Blaster, Jace Challenge',
-            created: 'Sonic Blaster'
+            created: 'Sonic Blaster',
+            pronouns: 'he/him'
         }
     ];
 
@@ -78,6 +81,7 @@ import { levels } from "./levels.js";
         const detailPoints = document.getElementById('detail-points');
         const detailBeaten = document.getElementById('detail-beaten');
         const detailCreated = document.getElementById('detail-created');
+        const detailPronouns = document.getElementById('detail-pronouns');
         const prevBtn = document.getElementById('prev-btn');
         const nextBtn = document.getElementById('next-btn');
 
@@ -113,6 +117,7 @@ import { levels } from "./levels.js";
             detailPoints.textContent = `${player.points} points`;
             detailBeaten.textContent = player.beaten;
             detailCreated.textContent = player.created;
+            detailPronouns.textContent = player.pronouns;
 
             playerList.querySelectorAll('.player-row').forEach((row, idx) => {
                 row.classList.toggle('selected', idx === index);

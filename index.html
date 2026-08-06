@@ -121,11 +121,7 @@
                 const label = document.getElementById('locale-label');
                 if (flag) flag.textContent = map.localeFlag;
                 if (label) label.textContent = map.localeLabel;
-                if (locale === 'es' && !__ffllSpanishAlertShown) {
-                    alert('Spanish is not yet finished, proceed | El español aún no ha terminado, ¿proceder?');
-                    __ffllSpanishAlertShown = true;
                 }
-            }
 
             function initLocaleToggle() {
                 const locale = getSavedLocale();
@@ -142,7 +138,7 @@
             initLocaleToggle();
     </script>
     <script>
-            const REDIRECT_URL = "redirect.html?how";
+            const REDIRECT_URL = "redirect.html?index";
             const POLL_INTERVAL_MS = 500;
             const allowBack = new URLSearchParams(window.location.search).get('allowBack') === '1';
             function kickUser() {
